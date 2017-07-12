@@ -1,4 +1,4 @@
-import Condition
+import condition
 
 class Gene(object):
 	def __init__(self):
@@ -62,7 +62,7 @@ class Chromosome(object):
 		# Loop through each hand in dataset
 		for hand in hands:
 			# Classify hand using genes
-			for gene in genes:
+			for gene in self.genes:
 				if gene.compute_result(hand):
 					hand.assigned_class = gene.hand_class
 			# Add up fitness for hand

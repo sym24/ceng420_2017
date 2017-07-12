@@ -16,7 +16,7 @@ class Condition(object):
 		return self.function(hand, *self.parameters)
 		
 	def gen_rand_params(self, seed):
-		return (,)
+		return ()
 		
 	def mutate_params(self, mutation_rate, seed):
 		return
@@ -42,7 +42,7 @@ class ValueDiffEq(Condition):
 		diff = random.randint(1,12)
 		
 		# Return them as a tuple
-		return = (idx1, idx2, diff)
+		return (idx1, idx2, diff)
 		
 	def mutate_params(self, mutation_rate, seed):
 		random.seed(seed)
@@ -91,7 +91,7 @@ class ValueEq(Condition):
 			idx2 = random.randint(0,4)
 		
 		# Return them as a tuple
-		return = (idx1, idx2)
+		return (idx1, idx2)
 		
 	def mutate_params(self, mutation_rate, seed):
 		random.seed(seed)
@@ -134,7 +134,7 @@ class ValueIneq(Condition):
 			idx2 = random.randint(0,4)
 		
 		# Return them as a tuple
-		return = (idx1, idx2)
+		return (idx1, idx2)
 		
 	def mutate_params(self, mutation_rate, seed):
 		random.seed(seed)
@@ -177,7 +177,7 @@ class ValueGt(Condition):
 		val = random.randint(1,12)
 		
 		# Return them as a tuple
-		return = (idx, val)
+		return (idx, val)
 		
 	def mutate_params(self, mutation_rate, seed):
 		random.seed(seed)
@@ -216,7 +216,7 @@ class ValueLt(Condition):
 		val = random.randint(2,13)
 		
 		# Return them as a tuple
-		return = (idx, val)
+		return (idx, val)
 		
 	def mutate_params(self, mutation_rate, seed):
 		random.seed(seed)
@@ -255,7 +255,7 @@ class SuitEq(Condition):
 			idx2 = random.randint(0,4)
 		
 		# Return them as a tuple
-		return = (idx1, idx2)
+		return (idx1, idx2)
 		
 	def mutate_params(self, mutation_rate, seed):
 		random.seed(seed)
@@ -298,7 +298,7 @@ class SuitIneq(Condition):
 			idx2 = random.randint(0,4)
 		
 		# Return them as a tuple
-		return = (idx1, idx2)
+		return (idx1, idx2)
 		
 	def mutate_params(self, mutation_rate, seed):
 		random.seed(seed)
