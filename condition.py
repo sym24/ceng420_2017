@@ -22,8 +22,8 @@ class Condition(object):
 		return
 		
 class ValueDiffEq(Condition):
-	def __init__(self):
-		Condition.__init__(self, self.value_diff_eq, *self.get_rand_params())
+	def __init__(self, seed):
+		Condition.__init__(self, self.value_diff_eq, *self.gen_rand_params(seed))
 		
 	@staticmethod
 	def value_diff_eq(hand, idx1, idx2, diff):
@@ -74,8 +74,8 @@ class ValueDiffEq(Condition):
 		
 		
 class ValueEq(Condition):
-	def __init__(self):
-		Condition.__init__(self, self.value_eq, *self.get_rand_params())
+	def __init__(self, seed):
+		Condition.__init__(self, self.value_eq, *self.gen_rand_params(seed))
 		
 	@staticmethod
 	def value_eq(hand, idx1, idx2):
@@ -117,8 +117,8 @@ class ValueEq(Condition):
 		self.parameters = (idx1, idx2)
 		
 class ValueIneq(Condition):
-	def __init__(self):
-		Condition.__init__(self, self.value_ineq, *self.get_rand_params())
+	def __init__(self, seed):
+		Condition.__init__(self, self.value_ineq, *self.gen_rand_params(seed))
 		
 	@staticmethod
 	def value_ineq(hand, idx1, idx2):
@@ -160,8 +160,8 @@ class ValueIneq(Condition):
 		self.parameters = (idx1, idx2)
 		
 class ValueGt(Condition):
-	def __init__(self):
-		Condition.__init__(self, self.value_gt, *self.get_rand_params())
+	def __init__(self, seed):
+		Condition.__init__(self, self.value_gt, *self.gen_rand_params(seed))
 	
 	@staticmethod
 	def value_gt(hand, idx, val):
@@ -199,8 +199,8 @@ class ValueGt(Condition):
 		self.parameters = (idx, val)
 		
 class ValueLt(Condition):
-	def __init__(self):
-		Condition.__init__(self, self.value_gt, *self.get_rand_params())
+	def __init__(self, seed):
+		Condition.__init__(self, self.value_lt, *self.gen_rand_params(seed))
 		
 	@staticmethod
 	def value_lt(hand, idx, val):
@@ -238,8 +238,8 @@ class ValueLt(Condition):
 		self.parameters = (idx, val)
 		
 class SuitEq(Condition):
-	def __init__(self):
-		Condition.__init__(self, self.suit_eq, *self.get_rand_params())
+	def __init__(self, seed):
+		Condition.__init__(self, self.suit_eq, *self.gen_rand_params(seed))
 		
 	@staticmethod
 	def suit_eq(hand, idx1, idx2):
@@ -281,11 +281,11 @@ class SuitEq(Condition):
 		self.parameters = (idx1, idx2)
 		
 class SuitIneq(Condition):
-	def __init__(self):
-		Condition.__init__(self, self.suit_ineq, *self.get_rand_params())
+	def __init__(self, seed):
+		Condition.__init__(self, self.suit_ineq, *self.gen_rand_params(seed))
 		
 	@staticmethod
-	def suit_eq(hand, idx1, idx2):
+	def suit_ineq(hand, idx1, idx2):
 		return (hand.cards[idx1].suit != hand.cards[idx2].suit)
 		
 	def gen_rand_params(self, seed):
