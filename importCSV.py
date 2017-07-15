@@ -13,5 +13,8 @@ pwd = os.getcwd()
 print(pwd)
 
 df = pd.read_csv(Filepath)
-
-train_data = df.loc[1,:'hand']
+hands = []
+for index, row in df.iterrows():
+    hands.append(Hand(row))
+    train_data = row[:]
+    print(train_data)
