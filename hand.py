@@ -13,7 +13,5 @@ class Hand(object):
 	def fitness(self):
 		if self.labelled_class == self.assigned_class:
 			return 1
-		elif self.assigned_class == -1:
-			return -1
 		else:
-			return 0
+			return -1

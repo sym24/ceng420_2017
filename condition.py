@@ -6,6 +6,22 @@ class Condition(object):
 		self.function = function
 		self.parameters = parameters
 		
+	def __eq__(self, other):
+		if type(self) is type(other):
+			result = self.function == other.function
+			if result:
+				result = result and self._parameter_equality(other)
+			return result
+		else:
+			return NotImplemented
+			
+	def __ineq__(self, other):
+		if type(self) is type(other):
+			return not self.__eq__(self, other)
+		
+	def _parameter_equality(self, other):
+		return self.parameters == other.parameters
+		
 	def update_condition(self, function, *parameters):
 		self.function = function
 		self.parameters = parameters
@@ -27,7 +43,13 @@ class ValueDiffEq(Condition):
 		
 	@staticmethod
 	def value_diff_eq(hand, idx1, idx2, diff):
-		return ( (hand.cards[idx1].val - hand.cards[idx2].val) == diff )
+		return ( abs(hand.cards[idx1].val - hand.cards[idx2].val) == diff )
+		
+	def _parameter_equality(self, other):
+		result = self.parameters[0] in other.parameters[0:2]
+		result = result and self.parameters[1] in other.parameters[0:2]
+		result = result and self.parameters[2] == other.parameters[2]
+		return result
 	
 	def gen_rand_params(self, seed):
 		random.seed(seed)
@@ -81,6 +103,11 @@ class ValueEq(Condition):
 	def value_eq(hand, idx1, idx2):
 		return ( hand.cards[idx1].val == hand.cards[idx2].val )
 		
+	def _parameter_equality(self, other):
+		result = self.parameters[0] in other.parameters[0:2]
+		result = result and self.parameters[1] in other.parameters[0:2]
+		return result
+		
 	def gen_rand_params(self, seed):
 		random.seed(seed)
 		
@@ -123,6 +150,11 @@ class ValueIneq(Condition):
 	@staticmethod
 	def value_ineq(hand, idx1, idx2):
 		return ( hand.cards[idx1].val != hand.cards[idx2].val )
+		
+	def _parameter_equality(self, other):
+		result = self.parameters[0] in other.parameters[0:2]
+		result = result and self.parameters[1] in other.parameters[0:2]
+		return result
 		
 	def gen_rand_params(self, seed):
 		random.seed(seed)
@@ -245,6 +277,11 @@ class SuitEq(Condition):
 	def suit_eq(hand, idx1, idx2):
 		return (hand.cards[idx1].suit == hand.cards[idx2].suit)
 		
+	def _parameter_equality(self, other):
+		result = self.parameters[0] in other.parameters[0:2]
+		result = result and self.parameters[1] in other.parameters[0:2]
+		return result
+		
 	def gen_rand_params(self, seed):
 		random.seed(seed)
 		
@@ -287,6 +324,11 @@ class SuitIneq(Condition):
 	@staticmethod
 	def suit_ineq(hand, idx1, idx2):
 		return (hand.cards[idx1].suit != hand.cards[idx2].suit)
+		
+	def _parameter_equality(self, other):
+		result = self.parameters[0] in other.parameters[0:2]
+		result = result and self.parameters[1] in other.parameters[0:2]
+		return result
 		
 	def gen_rand_params(self, seed):
 		random.seed(seed)

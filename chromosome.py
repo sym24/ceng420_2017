@@ -2,46 +2,74 @@ import random
 from gene import Gene
 		
 class Chromosome(object):
-	def __init__(self, max_genes, max_conds, seed):
+	def __init__(self):
 		self.genes = []
 		self.fitness = 0
-		self.generate_genes(max_genes, max_conds, seed)
+		self.correctly_classified = 0 
+		self.age = 0
 		
 	def generate_genes(self, max_genes, max_conds, seed):
 		random.seed(seed)
 		for i in range(random.randint(1,max_genes)):
-			self.genes.append(Gene(max_conds, random.random()))
-		
-	def add_gene(self, gene):
-		self.genes += gene
-		
-	def remove_gene(self, idx):
-		try:
-			del self.genes[idx]
-		except IndexError:
-			print "The index to remove is out of range. List size: %s" % len(self.genes)
+			gene = Gene()
+			gene.generate_conditions(max_conds, random.random())
+			self.genes.append(gene)
 			
-	def replace_gene(self, idx, new_gene):
-		try:
-			self.genes[idx] = new_gene
-		except IndexError:
-			print "The index to replace is out of range. List size: %s" % len(self.genes)
+	def insertion(self, max_conds, insertion_rate, seed):
+		random.seed(seed)
+		for i in range(len(self.genes)):
+			if random.random() < insertion_rate:
+				gene = Gene()
+				gene.generate_conditions(max_conds, random.random())
+				self.genes.append(gene)
+			
+	def deletion(self, deletion_rate, seed):
+		random.seed(seed)
+		if len(self.genes) == 0:
+			return
+		idx = 0
+		for i in range(len(self.genes)):
+			if random.random() < (deletion_rate - self.genes[idx].mutation_resistance):
+				del self.genes[idx]
+				idx -= 1
+			idx += 1
 		
 	def classify_hands(self, hands):
 		''' Loops through list of hands, and classifies each hand '''
 		# Initialize fitness
+		#if self.fitness != 0:
+		#	return
 		self.fitness = 0
+		self.correctly_classified = 0
+		for gene in self.genes:
+			gene.correct_assigns = 0
+			gene.total_assigns = 0
+			gene.mutation_resistance = 0.0
+			gene.labelled = [0 for i in range(10)]
 		
 		# Loop through each hand in dataset
 		for hand in hands:
 			# Classify hand using genes
+			hand.assigned_class = -1
+			hand_classes = [0 for i in range(0,10)]
 			for gene in self.genes:
 				if gene.compute_result(hand):
-					hand.assigned_class = gene.hand_class
+					# Add a count for given hand class
+					hand_classes[gene.hand_class] += 1
+					gene.labelled[hand.labelled_class] += 1
+					if hand.labelled_class == gene.hand_class:
+						gene.mutation_resistance += 1.0 / 100.0
+					#else:
+					#	gene.mutation_resistance -= 2.0 / len(hands)
+					# Update variables for mutation resilience
+					#gene.mutation_resistance = 0
+						
+			if max(hand_classes) > 0:
+				hand.assigned_class = hand_classes.index(max(hand_classes))
 			# Add up fitness for hand
 			self.fitness += hand.fitness
-			
-		# Apply minimum fitness so crossover still works
-		if self.fitness < 1:
-			self.fitness = 1
+			if hand.fitness == 1:
+				self.correctly_classified += 1
+				
+				
 			
