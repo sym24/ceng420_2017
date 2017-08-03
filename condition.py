@@ -2,6 +2,9 @@ from card import Card
 import random
 	
 class Condition(object):
+	'''
+	Base class for all conditions
+	'''
 	def __init__(self, function, *parameters):
 		self.function = function
 		self.parameters = parameters
@@ -41,9 +44,15 @@ class ValueDiffEq(Condition):
 	def __init__(self, seed):
 		Condition.__init__(self, self.value_diff_eq, *self.gen_rand_params(seed))
 		
+	def __str__(self):
+		return "(hand.cards[%s].val - hand.cards[%s].val) == %s" % (self.parameters[0], self.parameters[1], self.parameters[2])
+		
+	def __repr__(self):
+		return "(C%s - C%s) == %s" % (self.parameters[0] + 1, self.parameters[1] + 1, self.parameters[2])
+		
 	@staticmethod
 	def value_diff_eq(hand, idx1, idx2, diff):
-		return ( abs(hand.cards[idx1].val - hand.cards[idx2].val) == diff )
+		return ( hand.cards[idx1].val - hand.cards[idx2].val == diff )
 		
 	def _parameter_equality(self, other):
 		result = self.parameters[0] in other.parameters[0:2]
@@ -60,8 +69,12 @@ class ValueDiffEq(Condition):
 		while idx1 == idx2:
 			idx2 = random.randint(0,4)
 			
-		# Generate difference parameter (value of cards 1 - 13, therefore difference can be 1 - 12 to make this unique from equality)
+		# Generate difference parameter (value of cards 1 - 13, therefore difference can be -12 - 12 to make this unique from equality)
 		diff = random.randint(1,12)
+		
+		# 50% chance of making diff negative
+		if random.randint(0,1):
+			diff = -diff
 		
 		# Return them as a tuple
 		return (idx1, idx2, diff)
@@ -90,6 +103,8 @@ class ValueDiffEq(Condition):
 		param3 = random.random()	
 		if param3 <= mutation_rate:
 			diff = random.randint(1,12)
+			if random.randint(0,1):
+				diff = -diff
 			
 		# Update the parameters of the class
 		self.parameters = (idx1, idx2, diff)
@@ -98,6 +113,12 @@ class ValueDiffEq(Condition):
 class ValueEq(Condition):
 	def __init__(self, seed):
 		Condition.__init__(self, self.value_eq, *self.gen_rand_params(seed))
+		
+	def __str__(self):
+		return "hand.cards[%s].val == hand.cards[%s].val" % (self.parameters[0], self.parameters[1])
+		
+	def __repr__(self):
+		return "C%s == C%s" % (self.parameters[0] + 1, self.parameters[1] + 1)
 		
 	@staticmethod
 	def value_eq(hand, idx1, idx2):
@@ -147,6 +168,12 @@ class ValueIneq(Condition):
 	def __init__(self, seed):
 		Condition.__init__(self, self.value_ineq, *self.gen_rand_params(seed))
 		
+	def __str__(self):
+		return "hand.cards[%s].val != hand.cards[%s].val" % (self.parameters[0], self.parameters[1])
+		
+	def __repr__(self):
+		return "C%s != C%s" % (self.parameters[0] + 1, self.parameters[1] + 1)
+		
 	@staticmethod
 	def value_ineq(hand, idx1, idx2):
 		return ( hand.cards[idx1].val != hand.cards[idx2].val )
@@ -194,7 +221,13 @@ class ValueIneq(Condition):
 class ValueGt(Condition):
 	def __init__(self, seed):
 		Condition.__init__(self, self.value_gt, *self.gen_rand_params(seed))
-	
+		
+	def __str__(self):
+		return "hand.cards[%s].val > %s" % (self.parameters[0], self.parameters[1])
+		
+	def __repr__(self):
+		return "C%s > %s" % (self.parameters[0] + 1, self.parameters[1])
+			
 	@staticmethod
 	def value_gt(hand, idx, val):
 		return ( hand.cards[idx].val > val )
@@ -234,6 +267,12 @@ class ValueLt(Condition):
 	def __init__(self, seed):
 		Condition.__init__(self, self.value_lt, *self.gen_rand_params(seed))
 		
+	def __str__(self):
+		return "hand.cards[%s].val < %s" % (self.parameters[0], self.parameters[1])
+		
+	def __repr__(self):
+		return "C%s < %s" % (self.parameters[0] + 1, self.parameters[1])
+		
 	@staticmethod
 	def value_lt(hand, idx, val):
 		return ( hand.cards[idx].val < val )
@@ -272,6 +311,12 @@ class ValueLt(Condition):
 class SuitEq(Condition):
 	def __init__(self, seed):
 		Condition.__init__(self, self.suit_eq, *self.gen_rand_params(seed))
+		
+	def __str__(self):
+		return "hand.cards[%s].suit == hand.cards[%s].suit" % (self.parameters[0], self.parameters[1])
+		
+	def __repr__(self):
+		return "S%s == S%s" % (self.parameters[0] + 1, self.parameters[1] + 1)
 		
 	@staticmethod
 	def suit_eq(hand, idx1, idx2):
@@ -321,6 +366,12 @@ class SuitIneq(Condition):
 	def __init__(self, seed):
 		Condition.__init__(self, self.suit_ineq, *self.gen_rand_params(seed))
 		
+	def __str__(self):
+		return "hand.cards[%s].suit != hand.cards[%s].suit" % (self.parameters[0], self.parameters[1])
+		
+	def __repr__(self):
+		return "S%s != S%s" % (self.parameters[0] + 1, self.parameters[1] + 1)
+	
 	@staticmethod
 	def suit_ineq(hand, idx1, idx2):
 		return (hand.cards[idx1].suit != hand.cards[idx2].suit)

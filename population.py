@@ -24,6 +24,9 @@ class Population(object):
 		self.generate_chromosomes(population_size, seed)
 	
 	def generate_chromosomes(self, population_size, seed):
+		'''
+		Randomly generate a new population.
+		'''
 		random.seed(seed)
 		for i in range(population_size):
 			chromosome = Chromosome()
@@ -31,17 +34,29 @@ class Population(object):
 			self.chromosomes.append(chromosome)
 			
 	def calculate_fitness(self, hands, seed):
+		'''
+		Calculates the fitness of all chromosomes in population by making them try and
+		classify the hands provided.
+		'''
 		# Compute the fitness
 		for chromosome in self.chromosomes:
 			chromosome.classify_hands(hands)
 			chromosome.age += 1 
 			
-		# Adjust the fitness so that the minimum is positive (1)
-		min_fitness = min(chromosome.fitness for chromosome in self.chromosomes)
-		for chromosome in self.chromosomes:
-			chromosome.fitness -= (min_fitness - 1)
-			
 	def apply_mutations(self, chromosomes, seed):
+		'''
+		Apply mutations to given chromosomes. 
+		
+		There are 2 kinds of chromosome-level mutations:
+		1) Randomly delete genes from chromosome
+		2) Randomly insert genes to chromosome
+		
+		There are 4 kinds of gene-level mutations:
+		1) Randomly delete conditions from gene
+		2) Randomly insert conditions to gene
+		3) Randomly change the parameters in a condition
+		4) Randomly change the class of the gene
+		'''
 		random.seed(seed)
 		# mutate chromosome
 		for chromosome in chromosomes:# Apply deletion mutations
@@ -70,12 +85,15 @@ class Population(object):
 					gene.insertion(self.__insert_rate_gen, random.random())
 					
 	def roulette_selection(self, choices, seed):
+		''' 
+		Randomly select parents with probability proportional to the fitness.
+		'''
 		random.seed(seed)
 		
 		# Calculate total fitness
 		fitness_total = 0
 		for chromosome in self.chromosomes:
-			fitness_total += chromosome.fitness
+			fitness_total += int(chromosome.fitness + 0.5)
 			
 		# Choose parents
 		parent_chromosomes = []
@@ -85,16 +103,20 @@ class Population(object):
 			# Find the chromosome for parent
 			roulette_position = 0
 			for chromosome_idx in range(len(choices)):
-				roulette_position += choices[chromosome_idx].fitness
+				roulette_position += int(choices[chromosome_idx].fitness + 0.5)
 				if roulette_pointer <= roulette_position:
 					selection = choices.pop(chromosome_idx)
 					parent_chromosomes.append(selection)
-					fitness_total -= selection.fitness
+					fitness_total -= int(selection.fitness + 0.5)
 					break
 					
 		return parent_chromosomes
 		
 	def rank_selection(self, choices, seed):
+		''' 
+		Randomly select parents with probability proportional to the order of choices
+		when sorted based on fitness.
+		'''
 		random.seed(seed)
 		
 		# Sort choices in ascending order by fitness
@@ -121,6 +143,7 @@ class Population(object):
 		return parent_chromosomes
 		
 	def random_selection(self, choices, seed):
+		''' Randomly select parents with equal probability for each parent. '''
 		random.seed(seed)
 		
 		# Choose parents
@@ -135,6 +158,13 @@ class Population(object):
 		return parent_chromosomes
 		
 	def parent_selection(self, choices, seed):
+		'''
+		The parent selection method is chosen at random.
+		There are 3 methods of parents selection:
+		1) Rank Selection (44.44% chance)
+		2) Roulette Selection (44.44% chance)
+		3) Random Selection (11.11% chance)
+		'''
 		#std = stdev([chromosome.fitness for chromosome in choices])
 		random.seed(seed)
 		method = random.randint(1,9)
@@ -147,6 +177,17 @@ class Population(object):
 		
 					
 	def crossover(self, seed):
+		'''
+		Apply crossover to generate the new generation of the population. Steps:
+		1) Select parents (a parent can only be selected once)
+		2) Use the genes of parent to breed new children (genes randomly assigned to children)
+		3) Mutate children (multiple kinds of mutations)
+		4) Remove any children without genes
+		5) Remove any genes without alleles/conditions
+		6) Trim the population as needed
+		7) Add children to population
+		'''
+	
 		random.seed(seed)
 		
 		children_count = int(len(self.chromosomes) * self.__crossover)
@@ -173,13 +214,10 @@ class Population(object):
 					pop_idx = random.randint(0, len(parent.genes) - 1)
 					child_idx = random.randint(0, len(new_children) - 1)
 					
-					# Fix parent genes
-					#parent.genes[pop_idx].rewire_gene(random.random())
-					
-					# Add fixed parent gene to child
+					# Add parent gene to child
 					new_children[child_idx].genes.append(parent.genes.pop(pop_idx))
 					
-			# Delete copies of parents
+			# Delete copies of parents so they can't be chosen again
 			del parents
 			children += new_children
 			
@@ -203,7 +241,7 @@ class Population(object):
 			children.append(child)
 		
 		# Sort population by fitness
-		self.chromosomes.sort(key=lambda chromosome: chromosome.correctly_classified)
+		self.chromosomes.sort(key=lambda chromosome: (chromosome.fitness, chromosome.fitness))
 		
 		# If there's too many in the population, kill the least fit
 		if self.__population_limit > 0 and self.__population_limit < len(self.chromosomes):
@@ -216,12 +254,12 @@ class Population(object):
 			self.chromosomes = children + self.chromosomes
 		else:
 			# Kill half of the least fit
-			del self.chromosomes[0:int(len(children)/2)]		
+			#del self.chromosomes[0:int(len(children)/2)]		
 		
 			# Add children
 			self.chromosomes = children + self.chromosomes
 		
-			# Age population and kill off the elderly
+			# Kill off the elderly
 			idx = 0
 			for i in range(len(self.chromosomes)):
 				if self.chromosomes[idx].age > self.__lifetime:

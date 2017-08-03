@@ -1,0 +1,76 @@
+def classify(hands):
+	hand_classes = [0 for i in range(10)]
+	for hand in hands:
+		if (hand.cards[2].val > 9) and (hand.cards[3].suit != hand.cards[2].suit):
+			hand_classes[7] += 1
+		if (hand.cards[1].val > 12) and (hand.cards[2].suit == hand.cards[1].suit) and (hand.cards[0].suit != hand.cards[3].suit) and (hand.cards[4].val != hand.cards[0].val) and (hand.cards[2].suit != hand.cards[3].suit) and (hand.cards[4].suit == hand.cards[2].suit) and ((hand.cards[1].val - hand.cards[4].val) == 5) and (hand.cards[4].val < 2) and (hand.cards[3].val > 9):
+			hand_classes[0] += 1
+		if (hand.cards[0].suit != hand.cards[3].suit) and (hand.cards[0].val != hand.cards[4].val) and (hand.cards[4].val != hand.cards[0].val) and ((hand.cards[0].val - hand.cards[3].val) == -1) and ((hand.cards[2].val - hand.cards[4].val) == -9) and (hand.cards[3].val < 13) and (hand.cards[4].val < 7) and (hand.cards[4].suit == hand.cards[2].suit):
+			hand_classes[7] += 1
+		if (hand.cards[4].val != hand.cards[3].val) and (hand.cards[2].val > 6) and (hand.cards[4].val == hand.cards[3].val) and (hand.cards[4].val < 9) and (hand.cards[3].suit != hand.cards[2].suit) and (hand.cards[4].val == hand.cards[1].val) and (hand.cards[0].val == hand.cards[2].val) and (hand.cards[3].val != hand.cards[0].val) and (hand.cards[4].val == hand.cards[0].val) and ((hand.cards[1].val - hand.cards[2].val) == 9) and (hand.cards[4].suit == hand.cards[0].suit) and (hand.cards[4].val != hand.cards[0].val) and (hand.cards[0].val != hand.cards[2].val) and (hand.cards[4].val > 2) and (hand.cards[0].val < 10) and (hand.cards[0].suit == hand.cards[2].suit) and ((hand.cards[1].val - hand.cards[0].val) == 8) and (hand.cards[1].val == hand.cards[0].val) and (hand.cards[1].suit != hand.cards[2].suit) and ((hand.cards[3].val - hand.cards[0].val) == 1) and (hand.cards[0].suit == hand.cards[1].suit) and ((hand.cards[4].val - hand.cards[2].val) == 12) and (hand.cards[1].suit != hand.cards[4].suit) and (hand.cards[4].val != hand.cards[0].val) and (hand.cards[3].val != hand.cards[4].val) and (hand.cards[3].val > 7) and (hand.cards[4].val > 5):
+			hand_classes[9] += 1
+		if (hand.cards[1].val != hand.cards[4].val) and ((hand.cards[3].val - hand.cards[2].val) == 6) and (hand.cards[4].val != hand.cards[2].val) and (hand.cards[3].suit != hand.cards[2].suit):
+			hand_classes[8] += 1
+		if (hand.cards[0].val < 10) and (hand.cards[2].suit == hand.cards[1].suit) and (hand.cards[3].suit != hand.cards[0].suit) and (hand.cards[0].val != hand.cards[2].val) and (hand.cards[4].suit == hand.cards[2].suit) and (hand.cards[4].suit != hand.cards[3].suit) and (hand.cards[1].val != hand.cards[2].val) and (hand.cards[2].val != hand.cards[1].val) and (hand.cards[3].val == hand.cards[4].val) and (hand.cards[0].suit == hand.cards[3].suit) and (hand.cards[3].val != hand.cards[4].val) and (hand.cards[1].val < 2) and ((hand.cards[4].val - hand.cards[3].val) == -8) and (hand.cards[1].suit == hand.cards[2].suit) and (hand.cards[4].val < 13) and (hand.cards[2].val > 10) and (hand.cards[3].val != hand.cards[2].val):
+			hand_classes[5] += 1
+		if (hand.cards[0].val != hand.cards[2].val) and (hand.cards[3].val > 4) and (hand.cards[3].val > 11) and ((hand.cards[4].val - hand.cards[1].val) == 5) and ((hand.cards[3].val - hand.cards[4].val) == -9):
+			hand_classes[3] += 1
+		if ((hand.cards[4].val - hand.cards[0].val) == -2) and (hand.cards[0].val == hand.cards[3].val) and (hand.cards[2].val > 8) and ((hand.cards[0].val - hand.cards[1].val) == -12) and ((hand.cards[3].val - hand.cards[4].val) == 6):
+			hand_classes[2] += 1
+		if (hand.cards[2].suit != hand.cards[3].suit) and (hand.cards[0].suit == hand.cards[1].suit):
+			hand_classes[0] += 1
+		if (hand.cards[1].val == hand.cards[3].val) and (hand.cards[0].val > 5) and (hand.cards[4].val == hand.cards[3].val) and (hand.cards[1].val > 12) and ((hand.cards[2].val - hand.cards[4].val) == 7) and (hand.cards[4].val > 5) and ((hand.cards[3].val - hand.cards[0].val) == -4) and (hand.cards[0].val != hand.cards[2].val):
+			hand_classes[3] += 1
+		if (hand.cards[1].suit != hand.cards[0].suit) and (hand.cards[4].suit == hand.cards[2].suit) and (hand.cards[0].val < 9) and (hand.cards[4].val != hand.cards[2].val) and (hand.cards[4].val != hand.cards[3].val) and (hand.cards[3].val == hand.cards[2].val):
+			hand_classes[2] += 1
+		if (hand.cards[2].val != hand.cards[3].val) and (hand.cards[0].suit != hand.cards[4].suit):
+			hand_classes[1] += 1
+		if (hand.cards[2].val < 4) and (hand.cards[0].val < 13) and (hand.cards[0].val != hand.cards[3].val) and (hand.cards[0].val == hand.cards[1].val) and (hand.cards[1].val > 7) and (hand.cards[4].val > 1) and (hand.cards[2].val < 10) and (hand.cards[2].suit != hand.cards[1].suit) and (hand.cards[0].val != hand.cards[1].val) and (hand.cards[0].val < 2) and ((hand.cards[4].val - hand.cards[0].val) == -11) and (hand.cards[4].val < 8) and (hand.cards[2].val < 11) and ((hand.cards[4].val - hand.cards[0].val) == -5) and (hand.cards[2].val > 6) and ((hand.cards[2].val - hand.cards[4].val) == 6) and (hand.cards[1].suit != hand.cards[3].suit) and (hand.cards[0].suit == hand.cards[1].suit) and ((hand.cards[4].val - hand.cards[1].val) == 4) and (hand.cards[0].val != hand.cards[1].val) and (hand.cards[3].val < 13) and (hand.cards[2].suit != hand.cards[3].suit):
+			hand_classes[7] += 1
+		if (hand.cards[4].val > 1) and (hand.cards[1].suit != hand.cards[2].suit):
+			hand_classes[3] += 1
+		if (hand.cards[3].suit == hand.cards[1].suit) and (hand.cards[0].val < 10):
+			hand_classes[8] += 1
+		if (hand.cards[1].suit != hand.cards[0].suit) and (hand.cards[4].val < 5) and ((hand.cards[2].val - hand.cards[3].val) == -7) and (hand.cards[3].val == hand.cards[0].val) and (hand.cards[1].suit != hand.cards[0].suit) and (hand.cards[0].suit == hand.cards[2].suit):
+			hand_classes[8] += 1
+		if ((hand.cards[4].val - hand.cards[2].val) == -6) and (hand.cards[0].val < 6) and ((hand.cards[2].val - hand.cards[4].val) == 2) and (hand.cards[0].suit != hand.cards[4].suit) and ((hand.cards[0].val - hand.cards[3].val) == -1) and (hand.cards[1].val == hand.cards[0].val) and (hand.cards[2].suit != hand.cards[0].suit) and (hand.cards[2].suit != hand.cards[1].suit):
+			hand_classes[8] += 1
+		if (hand.cards[4].val != hand.cards[2].val) and (hand.cards[4].suit == hand.cards[2].suit) and (hand.cards[3].val != hand.cards[4].val):
+			hand_classes[9] += 1
+		if (hand.cards[3].val == hand.cards[2].val) and (hand.cards[1].suit != hand.cards[3].suit) and ((hand.cards[1].val - hand.cards[2].val) == -3) and (hand.cards[4].suit != hand.cards[3].suit) and (hand.cards[1].suit == hand.cards[0].suit) and (hand.cards[3].val < 9):
+			hand_classes[5] += 1
+		if ((hand.cards[3].val - hand.cards[0].val) == 12) and ((hand.cards[4].val - hand.cards[1].val) == -2) and (hand.cards[2].val == hand.cards[0].val) and (hand.cards[4].suit == hand.cards[3].suit) and (hand.cards[3].val != hand.cards[2].val) and (hand.cards[0].val < 10) and (hand.cards[2].suit == hand.cards[4].suit) and (hand.cards[3].val == hand.cards[4].val):
+			hand_classes[6] += 1
+		if (hand.cards[0].suit != hand.cards[4].suit) and (hand.cards[2].val == hand.cards[1].val) and ((hand.cards[0].val - hand.cards[3].val) == -11) and (hand.cards[4].val == hand.cards[3].val) and (hand.cards[0].val != hand.cards[1].val) and (hand.cards[0].val < 8) and (hand.cards[2].val > 12) and ((hand.cards[3].val - hand.cards[4].val) == 3) and ((hand.cards[2].val - hand.cards[3].val) == 2) and (hand.cards[3].val == hand.cards[0].val) and ((hand.cards[4].val - hand.cards[2].val) == -12) and (hand.cards[0].val == hand.cards[4].val) and ((hand.cards[2].val - hand.cards[3].val) == 3) and (hand.cards[1].suit != hand.cards[0].suit) and (hand.cards[3].val > 11) and (hand.cards[1].val < 2) and (hand.cards[4].val == hand.cards[1].val) and ((hand.cards[4].val - hand.cards[0].val) == 8) and (hand.cards[4].val != hand.cards[2].val) and (hand.cards[4].val != hand.cards[3].val) and (hand.cards[3].val != hand.cards[0].val) and (hand.cards[1].suit != hand.cards[0].suit) and (hand.cards[3].val < 3) and ((hand.cards[3].val - hand.cards[0].val) == -2) and (hand.cards[2].val > 1) and (hand.cards[2].val < 13) and ((hand.cards[2].val - hand.cards[1].val) == -12) and (hand.cards[3].val > 7) and (hand.cards[1].suit == hand.cards[3].suit) and (hand.cards[2].val > 6) and (hand.cards[2].suit != hand.cards[3].suit) and (hand.cards[4].val > 12):
+			hand_classes[0] += 1
+		if (hand.cards[1].val > 7) and ((hand.cards[4].val - hand.cards[3].val) == -3) and (hand.cards[3].val > 4) and ((hand.cards[3].val - hand.cards[1].val) == -12) and (hand.cards[4].val != hand.cards[1].val):
+			hand_classes[0] += 1
+		if (hand.cards[1].suit == hand.cards[0].suit) and ((hand.cards[3].val - hand.cards[2].val) == 7) and (hand.cards[1].suit == hand.cards[0].suit) and (hand.cards[2].val > 9) and (hand.cards[0].suit == hand.cards[4].suit) and ((hand.cards[2].val - hand.cards[4].val) == -2) and (hand.cards[1].val > 3) and (hand.cards[1].val > 12):
+			hand_classes[2] += 1
+		if (hand.cards[2].val != hand.cards[4].val) and ((hand.cards[0].val - hand.cards[3].val) == -12) and (hand.cards[0].suit == hand.cards[3].suit):
+			hand_classes[0] += 1
+		if ((hand.cards[3].val - hand.cards[0].val) == -5) and (hand.cards[1].val < 12) and (hand.cards[2].val == hand.cards[3].val) and (hand.cards[3].val != hand.cards[0].val) and (hand.cards[2].val != hand.cards[1].val) and (hand.cards[0].suit != hand.cards[2].suit) and (hand.cards[4].suit != hand.cards[3].suit) and (hand.cards[0].suit != hand.cards[3].suit) and (hand.cards[3].suit == hand.cards[2].suit) and (hand.cards[4].suit == hand.cards[3].suit) and (hand.cards[4].val > 11) and (hand.cards[1].val < 9) and (hand.cards[0].val < 10) and (hand.cards[3].suit != hand.cards[2].suit) and (hand.cards[2].suit != hand.cards[1].suit) and (hand.cards[0].val == hand.cards[1].val) and (hand.cards[2].suit == hand.cards[1].suit) and ((hand.cards[0].val - hand.cards[1].val) == -8) and (hand.cards[4].suit != hand.cards[0].suit) and ((hand.cards[1].val - hand.cards[4].val) == 11) and (hand.cards[2].suit == hand.cards[3].suit) and (hand.cards[3].suit != hand.cards[4].suit):
+			hand_classes[4] += 1
+		if (hand.cards[4].val < 3) and (hand.cards[4].suit == hand.cards[3].suit) and ((hand.cards[4].val - hand.cards[0].val) == -3) and (hand.cards[0].val != hand.cards[3].val) and (hand.cards[0].suit != hand.cards[3].suit) and (hand.cards[3].val < 10) and (hand.cards[1].val != hand.cards[3].val) and (hand.cards[3].val == hand.cards[0].val) and (hand.cards[3].val != hand.cards[1].val) and (hand.cards[0].suit == hand.cards[3].suit) and ((hand.cards[4].val - hand.cards[0].val) == 11) and (hand.cards[3].val != hand.cards[1].val):
+			hand_classes[8] += 1
+		if (hand.cards[1].val == hand.cards[0].val) and (hand.cards[4].suit == hand.cards[1].suit):
+			hand_classes[8] += 1
+		if (hand.cards[2].val < 3) and (hand.cards[1].val < 6) and (hand.cards[3].val < 3) and (hand.cards[4].suit == hand.cards[0].suit) and (hand.cards[2].val == hand.cards[3].val) and (hand.cards[4].val < 2):
+			hand_classes[7] += 1
+		if (hand.cards[3].val == hand.cards[2].val) and (hand.cards[1].val != hand.cards[3].val) and (hand.cards[1].suit != hand.cards[3].suit) and (hand.cards[2].val != hand.cards[3].val) and (hand.cards[0].suit == hand.cards[1].suit) and (hand.cards[4].val == hand.cards[0].val) and (hand.cards[3].val == hand.cards[2].val) and (hand.cards[1].suit != hand.cards[4].suit) and (hand.cards[2].val > 7) and (hand.cards[2].suit != hand.cards[4].suit) and (hand.cards[4].val == hand.cards[1].val) and ((hand.cards[4].val - hand.cards[1].val) == 9) and (hand.cards[1].suit == hand.cards[3].suit) and ((hand.cards[2].val - hand.cards[4].val) == -4):
+			hand_classes[9] += 1
+		if (hand.cards[3].val < 10) and (hand.cards[3].suit == hand.cards[4].suit) and (hand.cards[0].val != hand.cards[3].val) and (hand.cards[1].val > 3) and ((hand.cards[3].val - hand.cards[0].val) == -6) and (hand.cards[0].val < 6) and (hand.cards[0].suit == hand.cards[3].suit) and ((hand.cards[0].val - hand.cards[1].val) == -3) and (hand.cards[3].suit != hand.cards[1].suit) and (hand.cards[4].val != hand.cards[0].val) and (hand.cards[2].val != hand.cards[0].val):
+			hand_classes[1] += 1
+		if (hand.cards[1].val == hand.cards[0].val) and ((hand.cards[0].val - hand.cards[3].val) == 3) and (hand.cards[2].suit == hand.cards[1].suit) and ((hand.cards[1].val - hand.cards[3].val) == 11) and (hand.cards[4].val < 4) and (hand.cards[0].val == hand.cards[2].val) and ((hand.cards[0].val - hand.cards[3].val) == 6):
+			hand_classes[6] += 1
+		if (hand.cards[2].suit == hand.cards[4].suit) and (hand.cards[4].suit != hand.cards[2].suit) and (hand.cards[3].val == hand.cards[4].val) and (hand.cards[3].val > 4) and (hand.cards[1].val < 11) and (hand.cards[3].suit != hand.cards[2].suit) and (hand.cards[2].val != hand.cards[1].val) and (hand.cards[1].suit == hand.cards[2].suit) and (hand.cards[0].suit != hand.cards[3].suit) and (hand.cards[4].val < 5):
+			hand_classes[8] += 1
+		if ((hand.cards[3].val - hand.cards[2].val) == -11) and ((hand.cards[3].val - hand.cards[2].val) == 1) and (hand.cards[4].val > 2) and (hand.cards[3].val < 4) and ((hand.cards[4].val - hand.cards[2].val) == -12) and ((hand.cards[2].val - hand.cards[1].val) == 4) and (hand.cards[2].val == hand.cards[1].val) and (hand.cards[0].suit != hand.cards[2].suit) and (hand.cards[2].suit != hand.cards[1].suit) and (hand.cards[0].val > 7) and (hand.cards[1].val == hand.cards[4].val) and ((hand.cards[3].val - hand.cards[2].val) == -12) and (hand.cards[1].suit == hand.cards[2].suit) and (hand.cards[3].val == hand.cards[0].val) and (hand.cards[2].val > 9) and (hand.cards[2].val < 13) and (hand.cards[2].val != hand.cards[3].val) and (hand.cards[4].val == hand.cards[3].val) and ((hand.cards[3].val - hand.cards[1].val) == 7):
+			hand_classes[6] += 1
+		if (hand.cards[0].val != hand.cards[1].val) and (hand.cards[2].val == hand.cards[1].val) and (hand.cards[1].val < 9) and (hand.cards[3].val > 5) and ((hand.cards[0].val - hand.cards[1].val) == -1) and (hand.cards[3].val < 6) and (hand.cards[3].suit == hand.cards[1].suit) and (hand.cards[1].val == hand.cards[0].val) and (hand.cards[0].suit != hand.cards[1].suit) and (hand.cards[3].val != hand.cards[1].val) and (hand.cards[2].val > 2):
+			hand_classes[5] += 1
+		if ((hand.cards[4].val - hand.cards[3].val) == 9) and (hand.cards[1].val == hand.cards[3].val) and (hand.cards[0].val < 13) and ((hand.cards[0].val - hand.cards[1].val) == -8) and (hand.cards[3].suit == hand.cards[0].suit) and (hand.cards[0].val != hand.cards[3].val) and (hand.cards[2].val < 6) and (hand.cards[1].suit == hand.cards[4].suit) and ((hand.cards[3].val - hand.cards[0].val) == -1) and (hand.cards[0].suit == hand.cards[3].suit):
+			hand_classes[2] += 1
+		if (hand.cards[3].val != hand.cards[1].val) and (hand.cards[1].val > 5) and ((hand.cards[2].val - hand.cards[0].val) == 11) and (hand.cards[4].val < 13):
+			hand_classes[0] += 1
+		hand.assigned_class = hand_classes.index(max(hand_classes))

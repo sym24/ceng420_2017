@@ -63,25 +63,46 @@ class Card(object):
 		self._val = CardVal()
 		
 	def init_card_name(self, suit_name, card_name):
+		'''
+		Initialize card using string representation of suit and value.
+		'''
 		self._suit.init_property_name(suit_name)
 		self._val.init_property_name(card_name)
 		
 	def init_card_num(self, suit_num, card_num):
+		'''
+		Initialize card using numeric representation of suit and value, as described on 
+		Kaggle.
+		'''
 		self._suit.init_property_num(suit_num)
 		self._val.init_property_num(card_num)
 		
 	@property
 	def val(self):
+		'''
+		Returns the numeric representations of the value of the card, using the same 
+		indexing as presented on Kaggle.
+		'''
 		return self._val.num
 		
 	@property
 	def val_name(self):
+		'''
+		Returns the string representation of the value of the card.
+		'''
 		return self._val.name
 		
 	@property
 	def suit(self):
+		'''
+		Returns the numeric representation of the suit of the card, using the same 
+		indexing as presented on Kaggle.
+		'''
 		return self._suit.num
 		
 	@property
 	def suit_name(self):
+		'''
+		Returns the string representation of the suit of the card.
+		'''
 		return self._suit.name
