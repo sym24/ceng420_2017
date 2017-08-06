@@ -1,5 +1,5 @@
 # ceng420_2017
-##2017 Summer CENG420 Course Project
+## 2017 Summer CENG420 Course Project
 
 To run it, type "python importCSV.py"
 
