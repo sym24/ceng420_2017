@@ -1,5 +1,5 @@
 import random
-from statistics import stdev
+#from statistics import stdev
 from copy import deepcopy
 from chromosome import Chromosome
 
