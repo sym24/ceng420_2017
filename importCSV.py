@@ -28,9 +28,9 @@ for index, row in df.iterrows():
 print "Data loaded."
 
 print "Initializing population..."
-pop = Population(20, 100, 20, crossover_rate=0.5, insert_rate_c=0.5, insert_rate_g=0.3, lifetime=-1, \
-	recomb_rate_g=0.8, delete_rate_c = 0.5, delete_rate_g = 0.3, mutate_rate=0.8, pop_limit=-1, \
-	rand_child = 2, parent_count = 2)
+pop = Population(16, 100, 14, crossover_rate=0.5, insert_rate_c=0.3, insert_rate_g=0.4, lifetime=-1, \
+	recomb_rate_g=0.7, delete_rate_c = 0.5, delete_rate_g = 0.4, mutate_rate=0.8, pop_limit=-1, \
+	class_rate_c=0.8, class_rate_g=0.5, rand_child=1, parent_count=2)
 print "Population initialized."
 
 var = ""
@@ -39,7 +39,7 @@ while var.lower() not in ["y","n","yes","no"]:
 	if var.lower() in ["y","yes"]:
 		pop.chromosomes[0] = get_best_chromosome()
 
-percent = 20.0
+percent = 3.0
 generation_count = 0
 
 hands_classes = []
@@ -58,7 +58,7 @@ try:
 		for c_hands in hands_classes:
 			if (len(hands) * percent / 100.0) < len(c_hands):
 				rd.shuffle(c_hands)
-				train += c_hands[:int(len(c_hands)*percent / 100.0)]
+				train += c_hands[:int(len(hands)*percent / 100.0)]
 			else:
 				train += c_hands
 
@@ -74,9 +74,9 @@ try:
 			for gene in chromosome.genes:
 				cond_sum += len(gene.conditions)
 				mut_res_sum += gene.mutation_resistance
-			print "Chromosome fitness:%s, gene_cnt:%s, avg_cond:%s, age:%s" % \
+			print "Chromosome fitness:%s, gene_cnt:%s, avg_cond:%s, default:%s, age:%s" % \
 				(chromosome.fitness, len(chromosome.genes), cond_sum / len(chromosome.genes), \
-					chromosome.age)
+					chromosome.default_class, chromosome.age)
 
 		#max_fit = max(chromosome.fitness * len(chromosome.genes) for chromosome in pop.chromosomes)
 		#max_fit = max(chromosome.fitness for chromosome in pop.chromosomes)
@@ -86,7 +86,7 @@ try:
 		pop.chromosomes.sort(key=lambda chromosome: chromosome.fitness)
 		best = pop.chromosomes[-1]
 		for idx in range(10):
-			print "Class %s: %s/%s=%.2f" % (idx, best.class_fitness[idx], best.class_count[idx], \
+			print "Class %s: %d/%d=%.2f" % (idx, best.class_fitness[idx], best.class_count[idx], \
 				100.0 * float(best.class_fitness[idx]) / float(best.class_count[idx]))
 		
 
@@ -101,16 +101,23 @@ except KeyboardInterrupt:
 	pop.chromosomes.sort(key=lambda chromosome: chromosome.fitness)
 	best = pop.chromosomes[-1]
 	
+	# Get class distribution
+	class_distr = [0 for i in range(10)]
+	for hand in hands:
+		class_distr[hand.labelled_class] += 1
+	
 	# Classify data
 	print "Classifying test data..."
-	best.classify_hands(hands)
+	best.classify_hands(hands, class_distr)
 	print "Data classified"
 	print "Accuracy: %s/%s = %s percent" % (best.correctly_classified, len(hands), \
 		100.0 * float(best.correctly_classified) / float(len(hands)))
+	print "Fitness: %.2f" % best.fitness
 		
 	# Save chromosome function to file
 	print "Saving classifier to file classifier.py..."
 	with open('classifier.py', 'w') as output:
+		output.write("# Fitness: %.2f\n" %  best.fitness)
 		output.write("%s" % best)
 	
 	

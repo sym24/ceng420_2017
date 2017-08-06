@@ -308,6 +308,88 @@ class ValueLt(Condition):
 		# Update the parameters of the class
 		self.parameters = (idx, val)
 		
+class ValueCntEq(Condition):
+	def __init__(self, seed):
+		Condition.__init__(self, self.value_cnt_eq, *self.gen_rand_params(seed))
+		
+	def __str__(self):
+		return "len([card for card in hand.cards if card.val == %s]) == %s" % (self.parameters[0], self.parameters[1])
+		
+	def __repr__(self):
+		return "len([Ci for i in range(len(hand)) if Ci == %s]) == %s" % (self.parameters[0], self.parameters[1])
+		
+	@staticmethod
+	def value_cnt_eq(hand, val, count):
+		return (len([card for card in hand.cards if card.val == val]) == count)
+		
+	def gen_rand_params(self, seed):
+		random.seed(seed)
+		
+		# Generate a value to look for, and how many to look for
+		val = random.randint(1, 13)
+		count = random.randint(0, 4) # At most four cards with the same value
+		
+		return (val, count)
+		
+	def mutate_params(self, mutation_rate, seed):
+		random.seed(seed)
+		
+		# Get all parameters
+		val = self.parameters[0]
+		count = self.parameters[1]
+		
+		# Randomly apply mutations to parameters
+		param1 = random.random()
+		if param1 <= mutation_rate:
+			val = random.randint(1,13)
+
+		param2 = random.random()
+		if param2 <= mutation_rate:
+			count = random.randint(0,4)
+			
+		self.parameters = (val, count)
+		
+class ValueCntIneq(Condition):
+	def __init__(self, seed):
+		Condition.__init__(self, self.value_cnt_ineq, *self.gen_rand_params(seed))
+		
+	def __str__(self):
+		return "len([card for card in hand.cards if card.val == %s]) != %s" % (self.parameters[0], self.parameters[1])
+		
+	def __repr__(self):
+		return "len([Ci for i in range(len(hand)) if Ci == %s]) != %s" % (self.parameters[0], self.parameters[1])
+		
+	@staticmethod
+	def value_cnt_ineq(hand, val, count):
+		return (len([card for card in hand.cards if card.val == val]) != count)
+		
+	def gen_rand_params(self, seed):
+		random.seed(seed)
+		
+		# Generate a value to look for, and how many to look for
+		val = random.randint(1, 13)
+		count = random.randint(0, 4) # At most four cards with the same value
+		
+		return (val, count)
+		
+	def mutate_params(self, mutation_rate, seed):
+		random.seed(seed)
+		
+		# Get all parameters
+		val = self.parameters[0]
+		count = self.parameters[1]
+		
+		# Randomly apply mutations to parameters
+		param1 = random.random()
+		if param1 <= mutation_rate:
+			val = random.randint(1,13)
+
+		param2 = random.random()
+		if param2 <= mutation_rate:
+			count = random.randint(0,4)
+			
+		self.parameters = (val, count)
+		
 class SuitEq(Condition):
 	def __init__(self, seed):
 		Condition.__init__(self, self.suit_eq, *self.gen_rand_params(seed))
@@ -318,9 +400,13 @@ class SuitEq(Condition):
 	def __repr__(self):
 		return "S%s == S%s" % (self.parameters[0] + 1, self.parameters[1] + 1)
 		
-	@staticmethod
-	def suit_eq(hand, idx1, idx2):
-		return (hand.cards[idx1].suit == hand.cards[idx2].suit)
+	#@staticmethod
+	def suit_eq(self, hand, idx1, idx2):
+		try:
+			return (hand.cards[idx1].suit == hand.cards[idx2].suit)
+		except IndexError:
+			print self
+			raise IndexError("")
 		
 	def _parameter_equality(self, other):
 		result = self.parameters[0] in other.parameters[0:2]
@@ -415,6 +501,85 @@ class SuitIneq(Condition):
 			
 		# Update the parameters of the class
 		self.parameters = (idx1, idx2)
+		
+class SuitCntEq(Condition):
+	def __init__(self, seed):
+		Condition.__init__(self, self.suit_cnt_eq, *self.gen_rand_params(seed))
+		
+	def __str__(self):
+		return "len([card for card in hand.cards if card.suit == %s]) == %s" % (self.parameters[0], self.parameters[1])
+		
+	def __repr__(self):
+		return "len([Si for i in range(len(hand)) if Si == %s]) == %s" % (self.parameters[0], self.parameters[1])
+		
+	@staticmethod
+	def suit_cnt_eq(hand, suit, count):
+		return (len([card for card in hand.cards if card.suit == suit]) == count)
+		
+	def gen_rand_params(self, seed):
+		random.seed(seed)
+		
+		# Generate a value to look for, and how many to look for
+		suit = random.randint(1, 4)
+		count = random.randint(0, 5) # At most five cards with the same suit
+		
+		return (suit, count)
+		
+	def mutate_params(self, mutation_rate, seed):
+		random.seed(seed)
+		
+		# Get all parameters
+		suit = self.parameters[0]
+		count = self.parameters[1]
+		
+		# Randomly apply mutations to parameters
+		param1 = random.random()
+		if param1 <= mutation_rate:
+			suit = random.randint(1,4)
+
+		param2 = random.random()
+		if param2 <= mutation_rate:
+			count = random.randint(0,5)
+			
+		self.parameters = (suit, count)
 	
+class SuitCntIneq(Condition):
+	def __init__(self, seed):
+		Condition.__init__(self, self.suit_cnt_ineq, *self.gen_rand_params(seed))
 		
+	def __str__(self):
+		return "len([card for card in hand.cards if card.suit == %s]) != %s" % (self.parameters[0], self.parameters[1])
 		
+	def __repr__(self):
+		return "len([Si for i in range(len(hand)) if Si == %s]) != %s" % (self.parameters[0], self.parameters[1])
+		
+	@staticmethod
+	def suit_cnt_ineq(hand, suit, count):
+		return (len([card for card in hand.cards if card.suit == suit]) != count)
+		
+	def gen_rand_params(self, seed):
+		random.seed(seed)
+		
+		# Generate a value to look for, and how many to look for
+		suit = random.randint(1, 4)
+		count = random.randint(0, 5) # At most five cards with the same suit
+		
+		return (suit, count)
+		
+	def mutate_params(self, mutation_rate, seed):
+		random.seed(seed)
+		
+		# Get all parameters
+		suit = self.parameters[0]
+		count = self.parameters[1]
+		
+		# Randomly apply mutations to parameters
+		param1 = random.random()
+		if param1 <= mutation_rate:
+			suit = random.randint(1,4)
+
+		param2 = random.random()
+		if param2 <= mutation_rate:
+			count = random.randint(0,5)
+			
+		self.parameters = (suit, count)		

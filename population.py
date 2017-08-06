@@ -6,7 +6,8 @@ from chromosome import Chromosome
 class Population(object):
 	def __init__(self, population_size, max_genes, max_conds, crossover_rate=0.7, \
 		mutate_rate=0.9, insert_rate_c=0.6, delete_rate_c=0.4, insert_rate_g=0.7, rand_child=0,\
-		delete_rate_g=0.7, recomb_rate_g=0.9, parent_count=3, lifetime=-1, pop_limit=-1, seed=0):
+		delete_rate_g=0.7, recomb_rate_g=0.9, parent_count=3, lifetime=-1, pop_limit=-1, \
+		class_rate_g=0.6, class_rate_c=0.6, seed=0):
 		self.chromosomes = []
 		self.__max_genes = max_genes
 		self.__max_conds = max_conds
@@ -14,8 +15,10 @@ class Population(object):
 		self.__mutate_rate = mutate_rate
 		self.__insert_rate_chr = insert_rate_c
 		self.__delete_rate_chr = delete_rate_c
+		self.__class_rate_chr = class_rate_c
 		self.__insert_rate_gen = insert_rate_g
 		self.__delete_rate_gen = delete_rate_g
+		self.__class_rate_gen = class_rate_c
 		self.__recomb_rate_gen = recomb_rate_g
 		self.__lifetime = lifetime
 		self.__population_limit = pop_limit
@@ -38,9 +41,13 @@ class Population(object):
 		Calculates the fitness of all chromosomes in population by making them try and
 		classify the hands provided.
 		'''
+		class_distr = [0 for i in range(10)]
+		for hand in hands:
+			class_distr[hand.labelled_class] += 1
+		
 		# Compute the fitness
 		for chromosome in self.chromosomes:
-			chromosome.classify_hands(hands)
+			chromosome.classify_hands(hands, class_distr)
 			chromosome.age += 1 
 			
 	def apply_mutations(self, chromosomes, seed):
@@ -50,6 +57,7 @@ class Population(object):
 		There are 2 kinds of chromosome-level mutations:
 		1) Randomly delete genes from chromosome
 		2) Randomly insert genes to chromosome
+		3) Randomly mutate default chromosome class
 		
 		There are 4 kinds of gene-level mutations:
 		1) Randomly delete conditions from gene
@@ -60,12 +68,16 @@ class Population(object):
 		random.seed(seed)
 		# mutate chromosome
 		for chromosome in chromosomes:# Apply deletion mutations
-			if random.random() <= self.__mutate_rate:
-				chromosome.deletion(self.__delete_rate_chr, random.random())
-				
 			# Apply insertion mutations
 			if random.random() <= self.__mutate_rate:
-				chromosome.insertion(self.__max_conds, self.__insert_rate_chr, random.random())
+				chromosome.insertion(self.__max_genes, self.__max_conds, self.__insert_rate_chr, random.random())
+		
+			if random.random() <= self.__mutate_rate:
+				chromosome.deletion(self.__delete_rate_chr, random.random())
+			
+			# Apply default class mutation
+			if random.random() <= self.__mutate_rate:
+				chromosome.mutate_class(self.__class_rate_chr, random.random())
 				
 			for gene in chromosome.genes:
 				# Apply recombination mutations
@@ -78,7 +90,7 @@ class Population(object):
 					
 				# Apply class mutation
 				if random.random() <= self.__mutate_rate:
-					gene.mutate_class(self.__mutate_rate, random.random())
+					gene.mutate_class(self.__class_rate_gen, random.random())
 				
 				# Apply insertion mutations
 				if random.random() <= self.__mutate_rate:
@@ -90,10 +102,13 @@ class Population(object):
 		'''
 		random.seed(seed)
 		
+		if len(choices) == 0:
+			print "Error - There aren't any parents to chose from!"
+		
 		# Calculate total fitness
 		fitness_total = 0
-		for chromosome in self.chromosomes:
-			fitness_total += int(chromosome.fitness + 0.5)
+		for chromosome in choices:
+			fitness_total += int(chromosome.fitness)
 			
 		# Choose parents
 		parent_chromosomes = []
@@ -103,12 +118,15 @@ class Population(object):
 			# Find the chromosome for parent
 			roulette_position = 0
 			for chromosome_idx in range(len(choices)):
-				roulette_position += int(choices[chromosome_idx].fitness + 0.5)
+				roulette_position += int(choices[chromosome_idx].fitness)
 				if roulette_pointer <= roulette_position:
 					selection = choices.pop(chromosome_idx)
 					parent_chromosomes.append(selection)
-					fitness_total -= int(selection.fitness + 0.5)
+					fitness_total -= int(selection.fitness)
 					break
+				if chromosome_idx == (len(choices) - 1) and len(parent_chromosomes) == 0:
+					print "Error - roulette_position:%s, roulette_pointer:%s, fitness_total:%s" % (roulette_position, roulette_pointer, fitness_total)
+					
 					
 		return parent_chromosomes
 		
@@ -169,10 +187,13 @@ class Population(object):
 		random.seed(seed)
 		method = random.randint(1,9)
 		if method <= 4:
+			print "rank"
 			return self.rank_selection(choices, random.random())
 		elif method <= 8:
+			print "roulette"
 			return self.roulette_selection(choices, random.random())
 		else:
+			print "random"
 			return self.random_selection(choices, random.random())
 		
 					
@@ -216,6 +237,13 @@ class Population(object):
 					
 					# Add parent gene to child
 					new_children[child_idx].genes.append(parent.genes.pop(pop_idx))
+					
+			# Assign default classes
+			for child in new_children:
+				if len(parents) > 1:
+					child.default_class = parents[random.randint(0, len(parents) - 1)].default_class
+				else:
+					child.default_class = parents[0].default_class
 					
 			# Delete copies of parents so they can't be chosen again
 			del parents

@@ -39,10 +39,13 @@ def find_condition(condition_string):
 	'''
 	From condition str representation, find the condition
 	'''
-	parameters = map(int, findall(r'\d+', condition_string))
 	condition = None
 	if "-" in condition_string and "==" in condition_string and "val" in condition_string:
 		condition = ValueDiffEq(0)
+	elif ") ==" in condition_string and "val" in condition_string and "len" in condition_string:
+		condition = ValueCntEq(0)
+	elif ") !=" in condition_string and "val" in condition_string and "len" in condition_string:
+		condition = ValueCntIneq(0)
 	elif "==" in condition_string and "val" in condition_string:
 		condition = ValueEq(0)
 	elif "!=" in condition_string and "val" in condition_string:
@@ -51,11 +54,16 @@ def find_condition(condition_string):
 		condition = ValueGt(0)
 	elif "<" in condition_string and "val" in condition_string:
 		condition = ValueLt(0)
+	elif ") ==" in condition_string and "suit" in condition_string and "len" in condition_string:
+		condition = SuitCntEq(0)
+	elif ") !=" in condition_string and "suit" in condition_string and "len" in condition_string:
+		condition = SuitCntIneq(0)
 	elif "==" in condition_string and "suit" in condition_string:
 		condition = SuitEq(0)
 	elif "!=" in condition_string and "suit" in condition_string:
 		condition = SuitIneq(0)
 	if condition is not None:
+		parameters = map(int, findall(r'\d+', condition_string))
 		condition.parameters = tuple(parameters)
 	return condition
 	
@@ -73,17 +81,18 @@ def get_best_chromosome():
 	with open("classifier.py", "r") as best_file:
 		content = best_file.read().split('\n')
 		for i in range(len(content)):
-			if "if " in content[i]:
+			if "if " in content[i] and "hand_classes" not in content[i]:
 				gene = Gene()
 				content[i].replace("if ", "")
 				content[i].replace(":", "")
-				content[i].replace("(", "")
-				content[i].replace(")", "")
 				conditions = content[i].split(" and ")
 				gene.hand_class = find_hand_class(content[i+1])
 				for condition in conditions:
 					gene.conditions.append(find_condition(condition))
 				best_chromosome.genes.append(gene)
+			elif "else:" in content[i]:
+				stuff = content[i + 1].split(" = ")
+				best_chromosome.default_class = int(stuff[1])
 	return best_chromosome
 					
 				

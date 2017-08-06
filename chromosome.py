@@ -4,6 +4,7 @@ from gene import Gene
 class Chromosome(object):
 	def __init__(self):
 		self.genes = []
+		self.default_class = -1
 		self.class_fitness = [0 for i in range(10)]
 		self.class_count = [0 for i in range(10)]
 		self.fitness = 0
@@ -16,7 +17,10 @@ class Chromosome(object):
 		str += "for hand in hands:\n"
 		for gene in self.genes:
 			str += "%s" % gene
-		str += "\t\thand.assigned_class = hand_classes.index(max(hand_classes))"
+		str += "\n\t\tif max(hand_classes) > 0:\n"
+		str += "\t\t\thand.assigned_class = hand_classes.index(max(hand_classes))\n"
+		str += "\t\telse:\n"
+		str += "\t\t\thand.assigned_class = %d\n" % self.default_class
 		return str
 		
 	def __repr__(self):
@@ -27,19 +31,20 @@ class Chromosome(object):
 		Randomly generate a variable size chromosome.
 		'''
 		random.seed(seed)
+		self.default_class = random.randint(0,9)
 		for i in range(random.randint(1,max_genes)):
 			gene = Gene()
 			gene.generate_conditions(max_conds, random.random())
 			self.genes.append(gene)
 			
-	def insertion(self, max_conds, insertion_rate, seed):
+	def insertion(self, max_genes, max_conds, insertion_rate, seed):
 		'''
 		Mutation Function
 		Randomly inserts genes into the chromosome. 
 		'''
 		random.seed(seed)
-		for i in range(len(self.genes)):
-			if random.random() < insertion_rate:
+		for i in range(max_genes):
+			if random.random() < (insertion_rate):
 				gene = Gene()
 				gene.generate_conditions(max_conds, random.random())
 				self.genes.append(gene)
@@ -58,8 +63,13 @@ class Chromosome(object):
 				del self.genes[idx]
 				idx -= 1
 			idx += 1
+			
+	def mutate_class(self, mutate_rate, seed):
+		random.seed(seed)
+		if random.random() < mutate_rate:
+			self.default_class = random.randint(0,9)
 		
-	def classify_hands(self, hands):
+	def classify_hands(self, hands, class_distr = None):
 		''' Loops through list of hands, and classifies each hand '''
 		# Initialize fitness
 		#if self.fitness != 0:
@@ -82,15 +92,20 @@ class Chromosome(object):
 					# Add a count for given hand class
 					hand_classes[gene.hand_class] += 1
 					gene.labelled[hand.labelled_class] += 1
-					#if hand.labelled_class == gene.hand_class:
-					#	gene.mutation_resistance += 1.0 / 100.0
-					#else:
-					#	gene.mutation_resistance -= 2.0 / len(hands)
-					# Update variables for mutation resilience
-					#gene.mutation_resistance = 0
+					
+					# Update mutation resistance if classification was correct
+					if hand.labelled_class == gene.hand_class and class_distr is not None:
+						gene.mutation_resistance += 1.0 / float(class_distr[hand.labelled_class])
+						gene.mutation_resistance += 0.1 * float(int(class_distr[hand.labelled_class] / 1000)) / float(class_distr[hand.labelled_class])
+					#elif class_distr is not None:
+					#	gene.mutation_resistance -= 0.3 / float(class_distr[hand.labelled_class])
 						
+			# Classify hand
 			if max(hand_classes) > 0:
 				hand.assigned_class = hand_classes.index(max(hand_classes))
+			else:
+				hand.assigned_class = self.default_class
+				
 			# Add up fitness for hand
 			self.class_fitness[hand.labelled_class] += hand.fitness
 			self.class_count[hand.labelled_class] += 1
