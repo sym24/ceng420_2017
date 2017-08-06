@@ -12,15 +12,15 @@ class Gene(object):
 		
 	def __str__(self):
 		str = ""
-		str += "\t\t# Mutation Resistance: %.2f percent" % (100.0 * self.mutation_resistance)
+		str += "\t# Mutation Resistance: %.2f percent" % (100.0 * self.mutation_resistance)
 		str += "\n"
-		str += "\t\tif "
+		str += "\tif "
 		for condition in self.conditions:
 			str += "(%s)" % condition
 			if condition is not self.conditions[-1]:
 				str += " and "
 			else:
-				str += ":\n\t\t\t"
+				str += ":\n\t\t"
 		str += "hand_classes[%s] += 1\n" % self.hand_class
 		return str
 		

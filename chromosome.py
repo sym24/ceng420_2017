@@ -12,15 +12,14 @@ class Chromosome(object):
 		self.age = 0
 		
 	def __str__(self):
-		str = "def classify(hands):\n\t"
-		str += "hand_classes = [0 for i in range(10)]\n\t"
-		str += "for hand in hands:\n"
+		str = "def classify(hand):\n"
+		str += "\thand_classes = [0 for i in range(10)]\n"
 		for gene in self.genes:
 			str += "%s" % gene
-		str += "\n\t\tif max(hand_classes) > 0:\n"
-		str += "\t\t\thand.assigned_class = hand_classes.index(max(hand_classes))\n"
-		str += "\t\telse:\n"
-		str += "\t\t\thand.assigned_class = %d\n" % self.default_class
+		str += "\n\tif max(hand_classes) > 0:\n"
+		str += "\t\thand.assigned_class = hand_classes.index(max(hand_classes))\n"
+		str += "\telse:\n"
+		str += "\t\thand.assigned_class = %d\n" % self.default_class
 		return str
 		
 	def __repr__(self):
