@@ -28,9 +28,9 @@ for index, row in df.iterrows():
 print "Data loaded."
 
 print "Initializing population..."
-pop = Population(16, 100, 14, crossover_rate=0.5, insert_rate_c=0.3, insert_rate_g=0.4, lifetime=-1, \
-	recomb_rate_g=0.7, delete_rate_c = 0.5, delete_rate_g = 0.4, mutate_rate=0.8, pop_limit=-1, \
-	class_rate_c=0.8, class_rate_g=0.5, rand_child=1, parent_count=2)
+pop = Population(10, 100, 14, crossover_rate=0.5, insert_rate_c=0.5, insert_rate_g=0.4, lifetime=-1, \
+	recomb_rate_g=0.7, delete_rate_c = 0.7, delete_rate_g = 0.4, mutate_rate=0.8, pop_limit=-1, \
+	class_rate_c=0.8, class_rate_g=0.55, rand_child=2, parent_count=2)
 print "Population initialized."
 
 var = ""
@@ -41,6 +41,7 @@ while var.lower() not in ["y","n","yes","no"]:
 
 percent = 3.0
 generation_count = 0
+max_size = 100
 
 hands_classes = []
 for hand_class in range(10):
@@ -56,9 +57,16 @@ try:
 		print "Randomly selecting %s percent of hands for training..." % percent
 		train = []
 		for c_hands in hands_classes:
+			'''
 			if (len(hands) * percent / 100.0) < len(c_hands):
 				rd.shuffle(c_hands)
 				train += c_hands[:int(len(hands)*percent / 100.0)]
+			else:
+				train += c_hands
+			'''
+			if len(c_hands) > max_size:
+				rd.shuffle(c_hands)
+				train += c_hands[:max_size]
 			else:
 				train += c_hands
 

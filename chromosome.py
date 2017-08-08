@@ -86,22 +86,38 @@ class Chromosome(object):
 			# Classify hand using genes
 			hand.assigned_class = -1
 			hand_classes = [0 for i in range(0,10)]
+			
+			# Experimental - create variables for this hand
+			hand_confidences = [0 for i in range(10)]
+			
+			# Use genes to classify hand
 			for gene in self.genes:
 				if gene.compute_result(hand):
 					# Add a count for given hand class
 					hand_classes[gene.hand_class] += 1
 					gene.labelled[hand.labelled_class] += 1
 					
+					# Experimental
 					# Update mutation resistance if classification was correct
-					if hand.labelled_class == gene.hand_class and class_distr is not None:
+					if hand.labelled_class == gene.hand_class and gene.confidence > 0 and class_distr is not None:
 						gene.mutation_resistance += 1.0 / float(class_distr[hand.labelled_class])
-						gene.mutation_resistance += 0.1 * float(int(class_distr[hand.labelled_class] / 1000)) / float(class_distr[hand.labelled_class])
-					#elif class_distr is not None:
-					#	gene.mutation_resistance -= 0.3 / float(class_distr[hand.labelled_class])
-						
+						#gene.mutation_resistance += 0.1 * float(int(class_distr[hand.labelled_class] / 1000)) / float(class_distr[hand.labelled_class])
+					elif hand.labelled_class != gene.hand_class and gene.confidence < 0 and class_distr is not None:
+						gene.mutation_resistance += 0.5 / float(len(hands) - class_distr[hand.labelled_class])
+						#gene.mutation_resistance += 0.1 * float(int((len(hands) - class_distr[hand.labelled_class]) / 1000)) / float(len(hands) - class_distr[hand.labelled_class])
+					
+					#Experimental - Add confidence to given class. Assign if confidence has reached 100
+					hand_confidences[gene.hand_class] += gene.confidence
+			
+			#Experimental	
 			# Classify hand
-			if max(hand_classes) > 0:
-				hand.assigned_class = hand_classes.index(max(hand_classes))
+			if max(hand_confidences) >= 100:
+				hand.assigned_class = hand_confidences.index(max(hand_confidences))
+			elif self.one_vs_all != -1:
+				if hand.labelled_class == self.__one_vs_all:
+					hand.assigned_class = -1
+				else:
+					hand.assigned_class = hand.labelled_class
 			else:
 				hand.assigned_class = self.default_class
 				

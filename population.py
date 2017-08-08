@@ -7,7 +7,7 @@ class Population(object):
 	def __init__(self, population_size, max_genes, max_conds, crossover_rate=0.7, \
 		mutate_rate=0.9, insert_rate_c=0.6, delete_rate_c=0.4, insert_rate_g=0.7, rand_child=0,\
 		delete_rate_g=0.7, recomb_rate_g=0.9, parent_count=3, lifetime=-1, pop_limit=-1, \
-		class_rate_g=0.6, class_rate_c=0.6, seed=0):
+		class_rate_g=0.6, class_rate_c=0.6, confidence_rate=0.6, one_vs_all=-1, seed=0):
 		self.chromosomes = []
 		self.__max_genes = max_genes
 		self.__max_conds = max_conds
@@ -18,7 +18,8 @@ class Population(object):
 		self.__class_rate_chr = class_rate_c
 		self.__insert_rate_gen = insert_rate_g
 		self.__delete_rate_gen = delete_rate_g
-		self.__class_rate_gen = class_rate_c
+		self.__class_rate_gen = class_rate_g
+		self.__confidence_rate = confidence_rate
 		self.__recomb_rate_gen = recomb_rate_g
 		self.__lifetime = lifetime
 		self.__population_limit = pop_limit
@@ -64,6 +65,7 @@ class Population(object):
 		2) Randomly insert conditions to gene
 		3) Randomly change the parameters in a condition
 		4) Randomly change the class of the gene
+		5) Randomly change the confidence of the gene
 		'''
 		random.seed(seed)
 		# mutate chromosome
@@ -95,6 +97,9 @@ class Population(object):
 				# Apply insertion mutations
 				if random.random() <= self.__mutate_rate:
 					gene.insertion(self.__insert_rate_gen, random.random())
+					
+				if random.random() <= self.__mutate_rate:
+					gene.mutate_confidence(self.__confidence_rate, random.random())
 					
 	def roulette_selection(self, choices, seed):
 		''' 

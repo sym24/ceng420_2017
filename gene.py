@@ -5,6 +5,7 @@ class Gene(object):
 	def __init__(self):
 		self.conditions = []
 		self.hand_class = -1
+		self.confidence = 0
 		self.mutation_resistance = 0.0
 		self.labelled = [0 for i in range(10)]
 		self._possible_conditions = [ValueDiffEq, ValueEq, ValueIneq, ValueGt, ValueLt, \
@@ -33,6 +34,9 @@ class Gene(object):
 		'''
 		random.seed(seed)
 		self.hand_class = random.randint(0,9)
+		self.confidence = 5 * random.randrange(1,20)
+		if random.randint(0,1):
+			self.confidence *= -1
 		for i in range(random.randint(1,max_conds)):
 			condition_idx = random.randint(0,len(self._possible_conditions) - 1)
 			self.conditions.append(self._possible_conditions[condition_idx](random.random()))
@@ -88,6 +92,18 @@ class Gene(object):
 		random.seed(seed)
 		for condition in self.conditions:
 			condition.mutate_params(recombination_rate - self.mutation_resistance, random.random())
+			
+	def mutate_confidence(self, confidence_rate, seed):
+		'''
+		Randomly change confidence level of gene.
+		'''
+		random.seed(seed)
+		sign = 1 if self.confidence > 0 else -1
+		if random.random() < (confidence_rate):
+			self.confidence = 5 * random.randint(1,20)
+			if random.random() < (confidence_rate - self.mutation_resistance):
+				sign *= -1
+			self.confidence *= sign
 			
 	def mutate_class(self, mutate_rate, seed):
 		'''
