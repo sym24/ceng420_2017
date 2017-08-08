@@ -110,3 +110,13 @@ print "Data classified"
 print "Accuracy: %s/%s = %.2f percent" % (final_solution.correctly_classified, len(hands), \
 	100.0 * float(final_solution.correctly_classified) / float(len(hands)))
 	
+# Save chromosome function to file
+print "Saving classifier to file classifier.py..."
+path = join_dirs(pwd, 'templates')
+print path
+template = Environment(loader=FileSystemLoader(path)).get_template('classifier_template.py')
+with open('classifier.py', 'w') as output:
+	context = {
+		'chromosome':final_solution
+	}
+	output.write(template.render(context))

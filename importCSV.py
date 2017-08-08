@@ -10,8 +10,10 @@ import pandas as pd
 import random as rd
 from math import ceil
 from hand import Hand
+from jinja2 import Environment, FileSystemLoader
 from population import Population
 from classify_hands import get_best_chromosome
+from classify_hands import join_dirs
 
 Trainpath = 'train.csv'
 Testpath = 'test.csv'
@@ -124,8 +126,13 @@ except KeyboardInterrupt:
 		
 	# Save chromosome function to file
 	print "Saving classifier to file classifier.py..."
+	path = join_dirs(pwd, 'templates')
+	print path
+	template = Environment(loader=FileSystemLoader(path)).get_template('classifier_template.py')
 	with open('classifier.py', 'w') as output:
-		output.write("# Fitness: %.2f\n" %  best.fitness)
-		output.write("%s" % best)
+		context = {
+			'chromosome':best
+		}
+		output.write(template.render(context))
 	
 	
