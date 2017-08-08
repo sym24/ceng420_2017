@@ -5,6 +5,7 @@ from condition import *
 from hand import Hand
 from pandas import read_csv
 from re import findall
+import os
 
 def get_classified_hands(data_path):
 	''' Classifies hands using python script from GA (importCSV.py) '''
@@ -34,6 +35,16 @@ def get_data_bias(data_path):
 		print "Class %s: %.4f percent" % (i, class_occurences[i])
 	
 	return class_occurences
+	
+def join_dirs(base_dir, *dirs):
+	final_dir = base_dir
+	for dir in dirs:
+		# Check for Windows
+		if os.name == "nt":
+			final_dir += "\\%s" % dir
+		else:
+			final_dir += "/%s" % dir
+	return final_dir
 	
 def find_condition(condition_string):
 	'''
@@ -66,8 +77,6 @@ def find_condition(condition_string):
 		parameters = map(int, findall(r'\d+', condition_string))
 		condition.parameters = tuple(parameters)
 	return condition
-	
-	
 
 def find_hand_class(hand_class_string):
 	'''
@@ -76,17 +85,22 @@ def find_hand_class(hand_class_string):
 	stuff = hand_class_string.split("[")
 	return int(stuff[1][0])
 	
+def find_confidence(confidence_string):
+	stuff = confidence_string.split(" += ")
+	return int(stuff[1])
+	
 def get_best_chromosome():
 	best_chromosome = Chromosome()
 	with open("classifier.py", "r") as best_file:
 		content = best_file.read().split('\n')
 		for i in range(len(content)):
-			if "if " in content[i] and "hand_classes" not in content[i]:
+			if "if " in content[i] and "hand_confidences" not in content[i]:
 				gene = Gene()
 				content[i].replace("if ", "")
 				content[i].replace(":", "")
 				conditions = content[i].split(" and ")
 				gene.hand_class = find_hand_class(content[i+1])
+				gene.confidence = find_confidence(content[i+1])
 				for condition in conditions:
 					gene.conditions.append(find_condition(condition))
 				best_chromosome.genes.append(gene)

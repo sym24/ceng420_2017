@@ -8,8 +8,9 @@ class Chromosome(object):
 		self.class_fitness = [0 for i in range(10)]
 		self.class_count = [0 for i in range(10)]
 		self.fitness = 0
-		self.correctly_classified = 0 
+		self.correctly_classified = 0
 		self.age = 0
+		self.__one_vs_all = -1 # feature inactive
 		
 	def __str__(self):
 		str = "def classify(hand):\n"
@@ -34,7 +35,19 @@ class Chromosome(object):
 		for i in range(random.randint(1,max_genes)):
 			gene = Gene()
 			gene.generate_conditions(max_conds, random.random())
+			if self.one_vs_all != -1:
+				gene.hand_class = self.one_vs_all
 			self.genes.append(gene)
+			
+	@property
+	def one_vs_all(self):
+		return self.__one_vs_all
+		
+	@one_vs_all.setter
+	def one_vs_all(self, hand_class):
+		self.__one_vs_all = hand_class
+		for gene in self.genes:
+			gene.hand_class = hand_class
 			
 	def insertion(self, max_genes, max_conds, insertion_rate, seed):
 		'''
@@ -46,6 +59,8 @@ class Chromosome(object):
 			if random.random() < (insertion_rate):
 				gene = Gene()
 				gene.generate_conditions(max_conds, random.random())
+				if self.one_vs_all != -1:
+					gene.hand_class = self.one_vs_all
 				self.genes.append(gene)
 			
 	def deletion(self, deletion_rate, seed):
@@ -99,6 +114,8 @@ class Chromosome(object):
 					
 					# Experimental
 					# Update mutation resistance if classification was correct
+					#if self.one_vs_all != -1:
+					#	pass
 					if hand.labelled_class == gene.hand_class and gene.confidence > 0 and class_distr is not None:
 						gene.mutation_resistance += 1.0 / float(class_distr[hand.labelled_class])
 						#gene.mutation_resistance += 0.1 * float(int(class_distr[hand.labelled_class] / 1000)) / float(class_distr[hand.labelled_class])
@@ -139,11 +156,14 @@ class Chromosome(object):
 		'''
 		fitness = 0
 		for idx in range(10):
-			if self.class_count[idx] > 0:
+			if self.class_count[idx] > 0 and idx == self.__one_vs_all:
+				fitness += 500.0 * float(self.class_fitness[idx]) / float(self.class_count[idx])
+			elif self.class_count[idx] > 0:
 				fitness += 100.0 * float(self.class_fitness[idx]) / float(self.class_count[idx])
-		fitness = fitness
+					
 		if fitness <= 0:
 			fitness = 1
+			
 		return fitness
 		
 	@fitness.setter

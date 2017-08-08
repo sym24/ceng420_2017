@@ -25,6 +25,7 @@ class Population(object):
 		self.__population_limit = pop_limit
 		self.__parent_count = parent_count
 		self.__rand_child = rand_child
+		self.__one_vs_all = one_vs_all
 		self.generate_chromosomes(population_size, seed)
 	
 	def generate_chromosomes(self, population_size, seed):
@@ -35,7 +36,24 @@ class Population(object):
 		for i in range(population_size):
 			chromosome = Chromosome()
 			chromosome.generate_genes(self.__max_genes, self.__max_conds, random.random())
+			chromosome.one_vs_all = self.__one_vs_all
 			self.chromosomes.append(chromosome)
+		
+	@property	
+	def one_vs_all(self):
+		return self.__one_vs_all
+		
+	@one_vs_all.setter
+	def one_vs_all(self, hand_class):
+		'''
+		Setting this property enables the one-vs-all feature where the population can focus
+		on learning a single class. It will try and learn both what the class looks like, and
+		what the class doesn't look like. To disable the feature, set it to -1. To enable, set
+		it to the class you'd like to learn.
+		'''
+		self.__one_vs_all = hand_class
+		for chromosome in self.chromosomes:
+			chromosome.one_vs_all = hand_class
 			
 	def calculate_fitness(self, hands, seed):
 		'''
@@ -90,8 +108,8 @@ class Population(object):
 				if random.random() <= self.__mutate_rate:
 					gene.deletion(self.__delete_rate_gen, random.random())
 					
-				# Apply class mutation
-				if random.random() <= self.__mutate_rate:
+				# Apply class mutation (one_vs_all makes all genes the same class)
+				if self.__one_vs_all == -1 and random.random() <= self.__mutate_rate:
 					gene.mutate_class(self.__class_rate_gen, random.random())
 				
 				# Apply insertion mutations
@@ -243,8 +261,9 @@ class Population(object):
 					# Add parent gene to child
 					new_children[child_idx].genes.append(parent.genes.pop(pop_idx))
 					
-			# Assign default classes
+			# Assign default classes and the one_vs_all feature status
 			for child in new_children:
+				child.one_vs_all = self.__one_vs_all
 				if len(parents) > 1:
 					child.default_class = parents[random.randint(0, len(parents) - 1)].default_class
 				else:
