@@ -1,5 +1,5 @@
 # Fitness: {{ chromosome.fitness }}
-def classify(hand):
+def {{ function_name }}(hand):
 	hand_confidences = [0 for i in range(10)]
 	
 	{#- Generate if conditions -#}
@@ -20,4 +20,4 @@ def classify(hand):
 	if max(hand_confidences) >= 100:
 		hand.assigned_class = hand_confidences.index(max(hand_confidences))
 	else:
-		hand.assigned_class = 1
+		hand.assigned_class = {{ chromosome.default_class }}

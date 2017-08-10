@@ -7,7 +7,7 @@ class Population(object):
 	def __init__(self, population_size, max_genes, max_conds, crossover_rate=0.7, \
 		mutate_rate=0.9, insert_rate_c=0.6, delete_rate_c=0.4, insert_rate_g=0.7, rand_child=0,\
 		delete_rate_g=0.7, recomb_rate_g=0.9, parent_count=3, lifetime=-1, pop_limit=-1, \
-		class_rate_g=0.6, class_rate_c=0.6, confidence_rate=0.6, one_vs_all=-1, seed=0):
+		class_rate_g=0.6, class_rate_c=0.6, confidence_rate_g=0.6, one_vs_all=-1, seed=0):
 		self.chromosomes = []
 		self.__max_genes = max_genes
 		self.__max_conds = max_conds
@@ -19,7 +19,7 @@ class Population(object):
 		self.__insert_rate_gen = insert_rate_g
 		self.__delete_rate_gen = delete_rate_g
 		self.__class_rate_gen = class_rate_g
-		self.__confidence_rate = confidence_rate
+		self.__confidence_rate = confidence_rate_g
 		self.__recomb_rate_gen = recomb_rate_g
 		self.__lifetime = lifetime
 		self.__population_limit = pop_limit
@@ -73,7 +73,7 @@ class Population(object):
 		'''
 		Apply mutations to given chromosomes. 
 		
-		There are 2 kinds of chromosome-level mutations:
+		There are 3 kinds of chromosome-level mutations:
 		1) Randomly delete genes from chromosome
 		2) Randomly insert genes to chromosome
 		3) Randomly mutate default chromosome class
@@ -289,6 +289,7 @@ class Population(object):
 		# Add any random children to the mix
 		for i in range(self.__rand_child):
 			child = Chromosome()
+			child.one_vs_all = self.__one_vs_all
 			child.generate_genes(self.__max_genes, self.__max_conds, random.random())
 			children.append(child)
 		

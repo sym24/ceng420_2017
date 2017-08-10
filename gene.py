@@ -8,8 +8,6 @@ class Gene(object):
 		self.confidence = 0
 		self.mutation_resistance = 0.0
 		self.labelled = [0 for i in range(10)]
-		self._possible_conditions = [ValueDiffEq, ValueEq, ValueIneq, ValueGt, ValueLt, \
-			ValueCntEq, ValueCntIneq, SuitEq, SuitIneq, SuitCntEq, SuitCntIneq]
 		
 	def __str__(self):
 		str = ""
@@ -35,11 +33,12 @@ class Gene(object):
 		random.seed(seed)
 		self.hand_class = random.randint(0,9)
 		self.confidence = 5 * random.randrange(1,20)
+		conditions = Condition.get_conditions()
 		if random.randint(0,1):
 			self.confidence *= -1
 		for i in range(random.randint(1,max_conds)):
-			condition_idx = random.randint(0,len(self._possible_conditions) - 1)
-			self.conditions.append(self._possible_conditions[condition_idx](random.random()))
+			condition_idx = random.randint(0,len(conditions) - 1)
+			self.conditions.append(conditions[condition_idx](random.random()))
 		self.conditions = list(set(self.conditions)) # Remove any duplicate conditions
 		
 	def rewire_gene(self, seed):
@@ -68,8 +67,9 @@ class Gene(object):
 		random.seed(seed)
 		for i in range(len(self.conditions)):
 			if random.random() < (insertion_rate - self.mutation_resistance / 2):
-				condition_idx = random.randint(0,len(self._possible_conditions) - 1)
-				self.conditions.append(self._possible_conditions[condition_idx](random.random()))
+				conditions = Condition.get_conditions()
+				condition_idx = random.randint(0,len(conditions) - 1)
+				self.conditions.append(conditions[condition_idx](random.random()))
 			
 	def deletion(self, deletion_rate, seed):
 		'''

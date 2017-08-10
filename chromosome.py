@@ -88,61 +88,67 @@ class Chromosome(object):
 		# Initialize fitness
 		#if self.fitness != 0:
 		#	return
-		self.fitness = 0
-		self.correctly_classified = 0
-		for gene in self.genes:
-			gene.correct_assigns = 0
-			gene.total_assigns = 0
-			gene.mutation_resistance = 0.0
-			gene.labelled = [0 for i in range(10)]
-		
-		# Loop through each hand in dataset
-		for hand in hands:
-			# Classify hand using genes
-			hand.assigned_class = -1
-			hand_classes = [0 for i in range(0,10)]
-			
-			# Experimental - create variables for this hand
-			hand_confidences = [0 for i in range(10)]
-			
-			# Use genes to classify hand
+		initial_fitness = self.fitness
+		try:
+			self.fitness = 0
+			self.correctly_classified = 0
 			for gene in self.genes:
-				if gene.compute_result(hand):
-					# Add a count for given hand class
-					hand_classes[gene.hand_class] += 1
-					gene.labelled[hand.labelled_class] += 1
-					
-					# Experimental
-					# Update mutation resistance if classification was correct
-					#if self.one_vs_all != -1:
-					#	pass
-					if hand.labelled_class == gene.hand_class and gene.confidence > 0 and class_distr is not None:
-						gene.mutation_resistance += 1.0 / float(class_distr[hand.labelled_class])
-						#gene.mutation_resistance += 0.1 * float(int(class_distr[hand.labelled_class] / 1000)) / float(class_distr[hand.labelled_class])
-					elif hand.labelled_class != gene.hand_class and gene.confidence < 0 and class_distr is not None:
-						gene.mutation_resistance += 0.5 / float(len(hands) - class_distr[hand.labelled_class])
-						#gene.mutation_resistance += 0.1 * float(int((len(hands) - class_distr[hand.labelled_class]) / 1000)) / float(len(hands) - class_distr[hand.labelled_class])
-					
-					#Experimental - Add confidence to given class. Assign if confidence has reached 100
-					hand_confidences[gene.hand_class] += gene.confidence
+				gene.correct_assigns = 0
+				gene.total_assigns = 0
+				gene.mutation_resistance = 0.0
+				gene.labelled = [0 for i in range(10)]
+		
+			# Loop through each hand in dataset
+			for hand in hands:
+				# Classify hand using genes
+				hand.assigned_class = -1
+				hand_classes = [0 for i in range(0,10)]
 			
-			#Experimental	
-			# Classify hand
-			if max(hand_confidences) >= 100:
-				hand.assigned_class = hand_confidences.index(max(hand_confidences))
-			elif self.one_vs_all != -1:
-				if hand.labelled_class == self.__one_vs_all:
-					hand.assigned_class = -1
+				# Experimental - create variables for this hand
+				hand_confidences = [0 for i in range(10)]
+			
+				# Use genes to classify hand
+				for gene in self.genes:
+					if gene.compute_result(hand):
+						# Add a count for given hand class
+						hand_classes[gene.hand_class] += 1
+						gene.labelled[hand.labelled_class] += 1
+					
+						# Experimental
+						# Update mutation resistance if classification was correct
+						#if self.one_vs_all != -1:
+						#	pass
+						if hand.labelled_class == gene.hand_class and gene.confidence > 0 and class_distr is not None:
+							gene.mutation_resistance += 1.0 / float(class_distr[hand.labelled_class])
+							#gene.mutation_resistance += 0.1 * float(int(class_distr[hand.labelled_class] / 1000)) / float(class_distr[hand.labelled_class])
+						elif hand.labelled_class != gene.hand_class and gene.confidence < 0 and class_distr is not None:
+							gene.mutation_resistance += 1.0 / float(class_distr[hand.labelled_class])
+							#gene.mutation_resistance += 0.1 * float(int((len(hands) - class_distr[hand.labelled_class]) / 1000)) / float(len(hands) - class_distr[hand.labelled_class])
+					
+						#Experimental - Add confidence to given class. Assign if confidence has reached 100
+						hand_confidences[gene.hand_class] += gene.confidence
+			
+				#Experimental	
+				# Classify hand
+				if max(hand_confidences) >= 100:
+					hand.assigned_class = hand_confidences.index(max(hand_confidences))
+				elif self.one_vs_all != -1:
+					if hand.labelled_class == self.__one_vs_all:
+						hand.assigned_class = -1
+					else:
+						hand.assigned_class = hand.labelled_class
 				else:
-					hand.assigned_class = hand.labelled_class
-			else:
-				hand.assigned_class = self.default_class
+					hand.assigned_class = self.default_class
 				
-			# Add up fitness for hand
-			self.class_fitness[hand.labelled_class] += hand.fitness
-			self.class_count[hand.labelled_class] += 1
-			if hand.fitness == 1:
-				self.correctly_classified += 1
+				# Add up fitness for hand
+				self.class_fitness[hand.labelled_class] += hand.fitness
+				self.class_count[hand.labelled_class] += 1
+				if hand.fitness == 1:
+					self.correctly_classified += 1
+					
+		except KeyboardInterrupt:
+			self.fitness = initial_fitness
+			raise KeyboardInterrupt
 		
 	@property		
 	def fitness(self):

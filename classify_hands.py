@@ -51,31 +51,22 @@ def find_condition(condition_string):
 	From condition str representation, find the condition
 	'''
 	condition = None
-	if "-" in condition_string and "==" in condition_string and "val" in condition_string:
-		condition = ValueDiffEq(0)
-	elif ") ==" in condition_string and "val" in condition_string and "len" in condition_string:
-		condition = ValueCntEq(0)
-	elif ") !=" in condition_string and "val" in condition_string and "len" in condition_string:
-		condition = ValueCntIneq(0)
-	elif "==" in condition_string and "val" in condition_string:
-		condition = ValueEq(0)
-	elif "!=" in condition_string and "val" in condition_string:
-		condition = ValueIneq(0)
-	elif ">" in condition_string and "val" in condition_string:
-		condition = ValueGt(0)
-	elif "<" in condition_string and "val" in condition_string:
-		condition = ValueLt(0)
-	elif ") ==" in condition_string and "suit" in condition_string and "len" in condition_string:
-		condition = SuitCntEq(0)
-	elif ") !=" in condition_string and "suit" in condition_string and "len" in condition_string:
-		condition = SuitCntIneq(0)
-	elif "==" in condition_string and "suit" in condition_string:
-		condition = SuitEq(0)
-	elif "!=" in condition_string and "suit" in condition_string:
-		condition = SuitIneq(0)
+	
+	# Loop through all possible conditions, and see if the string matches with any of them
+	possible_conditions = Condition.get_conditions()
+	for possible_condition in possible_conditions:
+		if possible_condition.is_string_condition(condition_string):
+			condition = possible_condition(0)
+			break
+			
+	# Find the parameters for the condition if the string is a condition
 	if condition is not None:
-		parameters = map(int, findall(r'\d+', condition_string))
+		parameters = map(int, findall(r'[-]?\d+', condition_string))
 		condition.parameters = tuple(parameters)
+	else:
+		print "Unable to find correct condition"
+		print condition_string
+		
 	return condition
 
 def find_hand_class(hand_class_string):
@@ -89,12 +80,22 @@ def find_confidence(confidence_string):
 	stuff = confidence_string.split(" += ")
 	return int(stuff[1])
 	
-def get_best_chromosome():
+def get_best_chromosome(function_name):
 	best_chromosome = Chromosome()
 	with open("classifier.py", "r") as best_file:
 		content = best_file.read().split('\n')
+		start = False
 		for i in range(len(content)):
-			if "if " in content[i] and "hand_confidences" not in content[i]:
+			# Start and stop conditions
+			if ("def " + function_name + "(hand):") in content[i]:
+				start = True
+				continue
+			elif "def " in content[i]:
+				start = False
+				continue
+				
+			# Parsing
+			if start and "if " in content[i] and "hand_confidences" not in content[i]:
 				gene = Gene()
 				content[i].replace("if ", "")
 				content[i].replace(":", "")
@@ -104,7 +105,7 @@ def get_best_chromosome():
 				for condition in conditions:
 					gene.conditions.append(find_condition(condition))
 				best_chromosome.genes.append(gene)
-			elif "else:" in content[i]:
+			elif start and "else:" in content[i]:
 				stuff = content[i + 1].split(" = ")
 				best_chromosome.default_class = int(stuff[1])
 	return best_chromosome

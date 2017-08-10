@@ -25,6 +25,15 @@ class Condition(object):
 	def _parameter_equality(self, other):
 		return self.parameters == other.parameters
 		
+	@staticmethod
+	def is_string_condition(string):
+		raise NotImplementedError("is_string_condition has not yet been implemented in derived class")
+		
+	@staticmethod
+	def get_conditions():
+		return [ValueDiffEq, ValueEq, ValueIneq, ValueGt, ValueLt, \
+			ValueCntEq, ValueCntIneq, SuitEq, SuitIneq, SuitCntEq, SuitCntIneq]
+		
 	def update_condition(self, function, *parameters):
 		self.function = function
 		self.parameters = parameters
@@ -49,6 +58,10 @@ class ValueDiffEq(Condition):
 		
 	def __repr__(self):
 		return "(C%s - C%s) == %s" % (self.parameters[0] + 1, self.parameters[1] + 1, self.parameters[2])
+		
+	@staticmethod
+	def is_string_condition(string):
+		return "(hand.cards[" in string and "].val - hand.cards[" in string and "].val) == " in string
 		
 	@staticmethod
 	def value_diff_eq(hand, idx1, idx2, diff):
@@ -119,6 +132,10 @@ class ValueEq(Condition):
 		
 	def __repr__(self):
 		return "C%s == C%s" % (self.parameters[0] + 1, self.parameters[1] + 1)
+
+	@staticmethod		
+	def is_string_condition(string):
+		return "hand.cards[" in string and "].val == hand.cards[" in string and "].val" in string
 		
 	@staticmethod
 	def value_eq(hand, idx1, idx2):
@@ -175,6 +192,10 @@ class ValueIneq(Condition):
 		return "C%s != C%s" % (self.parameters[0] + 1, self.parameters[1] + 1)
 		
 	@staticmethod
+	def is_string_condition(string):
+		return "hand.cards[" in string and "].val != hand.cards[" in string and "].val" in string
+		
+	@staticmethod
 	def value_ineq(hand, idx1, idx2):
 		return ( hand.cards[idx1].val != hand.cards[idx2].val )
 		
@@ -227,6 +248,10 @@ class ValueGt(Condition):
 		
 	def __repr__(self):
 		return "C%s > %s" % (self.parameters[0] + 1, self.parameters[1])
+		
+	@staticmethod
+	def is_string_condition(string):
+		return "hand.cards[" in string and "].val > " in string
 			
 	@staticmethod
 	def value_gt(hand, idx, val):
@@ -274,6 +299,10 @@ class ValueLt(Condition):
 		return "C%s < %s" % (self.parameters[0] + 1, self.parameters[1])
 		
 	@staticmethod
+	def is_string_condition(string):
+		return "hand.cards[" in string and "].val < " in string
+		
+	@staticmethod
 	def value_lt(hand, idx, val):
 		return ( hand.cards[idx].val < val )
 		
@@ -319,6 +348,10 @@ class ValueCntEq(Condition):
 		return "len([Ci for i in range(len(hand)) if Ci == %s]) == %s" % (self.parameters[0], self.parameters[1])
 		
 	@staticmethod
+	def is_string_condition(string):
+		return "len([card for card in hand.cards if card.val == " in string and "]) == " in string
+		
+	@staticmethod
 	def value_cnt_eq(hand, val, count):
 		return (len([card for card in hand.cards if card.val == val]) == count)
 		
@@ -358,6 +391,10 @@ class ValueCntIneq(Condition):
 		
 	def __repr__(self):
 		return "len([Ci for i in range(len(hand)) if Ci == %s]) != %s" % (self.parameters[0], self.parameters[1])
+		
+	@staticmethod
+	def is_string_condition(string):
+		return "len([card for card in hand.cards if card.val == " in string and "]) != " in string
 		
 	@staticmethod
 	def value_cnt_ineq(hand, val, count):
@@ -400,8 +437,12 @@ class SuitEq(Condition):
 	def __repr__(self):
 		return "S%s == S%s" % (self.parameters[0] + 1, self.parameters[1] + 1)
 		
-	#@staticmethod
-	def suit_eq(self, hand, idx1, idx2):
+	@staticmethod
+	def is_string_condition(string):
+		return "hand.cards[" in string and "].suit == hand.cards[" in string and "].suit" in string
+		
+	@staticmethod
+	def suit_eq(hand, idx1, idx2):
 		try:
 			return (hand.cards[idx1].suit == hand.cards[idx2].suit)
 		except IndexError:
@@ -457,6 +498,10 @@ class SuitIneq(Condition):
 		
 	def __repr__(self):
 		return "S%s != S%s" % (self.parameters[0] + 1, self.parameters[1] + 1)
+		
+	@staticmethod
+	def is_string_condition(string):
+		return "hand.cards[" in string and "].suit != hand.cards[" in string and "].suit" in string
 	
 	@staticmethod
 	def suit_ineq(hand, idx1, idx2):
@@ -513,6 +558,10 @@ class SuitCntEq(Condition):
 		return "len([Si for i in range(len(hand)) if Si == %s]) == %s" % (self.parameters[0], self.parameters[1])
 		
 	@staticmethod
+	def is_string_condition(string):
+		return "len([card for card in hand.cards if card.suit == " in string and "]) == " in string
+		
+	@staticmethod
 	def suit_cnt_eq(hand, suit, count):
 		return (len([card for card in hand.cards if card.suit == suit]) == count)
 		
@@ -552,6 +601,10 @@ class SuitCntIneq(Condition):
 		
 	def __repr__(self):
 		return "len([Si for i in range(len(hand)) if Si == %s]) != %s" % (self.parameters[0], self.parameters[1])
+		
+	@staticmethod
+	def is_string_condition(string):
+		return "len([card for card in hand.cards if card.suit == " in string and "]) != " in string
 		
 	@staticmethod
 	def suit_cnt_ineq(hand, suit, count):

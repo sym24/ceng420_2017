@@ -30,16 +30,17 @@ for index, row in df.iterrows():
 print "Data loaded."
 
 print "Initializing population..."
+rd.seed(1)
 pop = Population(10, 100, 14, crossover_rate=0.5, insert_rate_c=0.5, insert_rate_g=0.4, lifetime=-1, \
 	recomb_rate_g=0.7, delete_rate_c = 0.7, delete_rate_g = 0.4, mutate_rate=0.8, pop_limit=-1, \
-	class_rate_c=0.8, class_rate_g=0.55, rand_child=2, parent_count=2)
+	class_rate_c=0.8, class_rate_g=0.55, rand_child=2, parent_count=2, seed=rd.random())
 print "Population initialized."
 
 var = ""
 while var.lower() not in ["y","n","yes","no"]:
 	var = raw_input("Add current best to population? (y/n) ")
 	if var.lower() in ["y","yes"]:
-		pop.chromosomes[0] = get_best_chromosome()
+		pop.chromosomes[0] = get_best_chromosome('classify')
 
 percent = 3.0
 generation_count = 0
@@ -127,10 +128,10 @@ except KeyboardInterrupt:
 	# Save chromosome function to file
 	print "Saving classifier to file classifier.py..."
 	path = join_dirs(pwd, 'templates')
-	print path
 	template = Environment(loader=FileSystemLoader(path)).get_template('classifier_template.py')
 	with open('classifier.py', 'w') as output:
 		context = {
+			'function_name':'classify',
 			'chromosome':best
 		}
 		output.write(template.render(context))
