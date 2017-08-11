@@ -26,7 +26,7 @@ print "Data loaded."
 print "Initializing 10 populations, one for each class..."
 rd.seed(0)
 populations = []
-population_size = 10
+population_size = 13
 max_genes = 20
 max_conds = 10
 for i in range(10):
@@ -39,7 +39,7 @@ hands_classes = []
 for hand_class in range(10):
 	hands_classes.append([hand for hand in hands if hand.labelled_class == hand_class])
 
-percent = 15.0
+percent = 2.0
 
 
 for i in range(10):
@@ -102,10 +102,16 @@ for hand_class in range(10):
 	best_chromosome = populations[hand_class].chromosomes[-1]
 	final_solution.genes += best_chromosome.genes
 print "Final solution computed."
+	
+# Get class distribution
+print "Getting class distribution..."
+class_distr = [0 for i in range(10)]
+for hand in hands:
+	class_distr[hand.labelled_class] += 1
 		
 # Classify data
 print "Classifying all data..."
-final_solution.classify_hands(hands)
+final_solution.classify_hands(hands, class_distr)
 print "Data classified"
 print "Accuracy: %s/%s = %.2f percent" % (final_solution.correctly_classified, len(hands), \
 	100.0 * float(final_solution.correctly_classified) / float(len(hands)))

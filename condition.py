@@ -31,7 +31,7 @@ class Condition(object):
 		
 	@staticmethod
 	def get_conditions():
-		return [ValueDiffEq, ValueEq, ValueIneq, ValueGt, ValueLt, \
+		return [ArithSequCnt, ValueDiffEq, ValueEq, ValueIneq, ValueGt, ValueLt, \
 			ValueCntEq, ValueCntIneq, SuitEq, SuitIneq, SuitCntEq, SuitCntIneq]
 		
 	def update_condition(self, function, *parameters):
@@ -49,6 +49,63 @@ class Condition(object):
 	def mutate_params(self, mutation_rate, seed):
 		return
 		
+class ArithSequCnt(Condition):
+	'''
+	Counts the number of transitions between cards that match the specified arithmetic sequence
+	'''
+	def __init__(self, seed):
+		Condition.__init__(self, self.arith_sequ_cnt, *self.gen_rand_params(seed))
+		
+	def __str__(self):
+		return "len([i for i in range(len(hand.cards) - 1) if (sorted(hand.cards, key=lambda card: card.val)[i+1].val - " + \
+			"sorted(hand.cards, key=lambda card: card.val)[i].val) == %s]) == %s" % (self.parameters[0], self.parameters[1])
+			
+	def __repr__(self):
+		return "Checks if there are %s transitions from card.val -> card.val + %s in a sorted list." % (self.parameters[1], self.parameters[0])
+			
+	@staticmethod
+	def is_string_condition(string):
+		return "len([i for i in range(len(hand.cards) - 1) if (sorted(hand.cards, key=lambda card: card.val)[i+1].val - " in string \
+			and "sorted(hand.cards, key=lambda card: card.val)[i].val) == " in string and "]) == " in string
+		
+	@staticmethod
+	def arith_sequ_cnt(hand, adder, count):
+		return len([i for i in range(len(hand.cards) - 1) if (sorted(hand.cards, key=lambda card: card.val)[i+1].val - \
+			sorted(hand.cards, key=lambda card: card.val)[i].val) == adder]) == count
+			
+	def gen_rand_params(self, seed):
+		random.seed(seed)
+		
+		# Generate the number of transitions to look for
+		count = random.randint(1, 4)
+		
+		# Generate an adder for the arithmetic sequence
+		adder = random.randint(0, int(12 / count))
+		
+		# Return parameters as tuple
+		return (adder, count)
+		
+	def mutate_params(self, mutation_rate, seed):
+		# Get parameters
+		adder = self.parameters[0]
+		count = self.parameters[1]
+		
+		# Mutate count
+		if random.random() <= mutation_rate:
+			count = random.randint(1, 4)
+			
+		# Mutate adder
+		if random.random() <= mutation_rate:
+			adder = random.randint(0, int(12 / count))
+			
+		# Make sure the adder parameter is still valid
+		if adder > int(12 / count):
+			adder = random.randint(0, int(12 / count))
+			
+		# Update parameters with new values
+		self.parameters = (adder, count)
+			
+				
 class ValueDiffEq(Condition):
 	def __init__(self, seed):
 		Condition.__init__(self, self.value_diff_eq, *self.gen_rand_params(seed))
