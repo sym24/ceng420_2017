@@ -123,6 +123,7 @@ print path
 template = Environment(loader=FileSystemLoader(path)).get_template('classifier_template.py')
 with open('classifier.py', 'w') as output:
 	context = {
+		'function_name':'classifier',
 		'chromosome':final_solution
 	}
 	output.write(template.render(context))
