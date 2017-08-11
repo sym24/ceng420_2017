@@ -1,4 +1,5 @@
 from card import Card
+from re import findall
 import random
 	
 class Condition(object):
@@ -26,13 +27,20 @@ class Condition(object):
 		return self.parameters == other.parameters
 		
 	@staticmethod
+	def get_conditions():
+		return [ArithSequCnt, ValueDiffEq, ValueEq, ValueIneq, ValueGt, ValueLt, \
+			ValueCntEq, ValueCntIneq, SuitEq, SuitIneq, SuitCntEq, SuitCntIneq]
+		
+	@staticmethod
 	def is_string_condition(string):
 		raise NotImplementedError("is_string_condition has not yet been implemented in derived class")
 		
 	@staticmethod
-	def get_conditions():
-		return [ArithSequCnt, ValueDiffEq, ValueEq, ValueIneq, ValueGt, ValueLt, \
-			ValueCntEq, ValueCntIneq, SuitEq, SuitIneq, SuitCntEq, SuitCntIneq]
+	def find_params_from_string(string):
+		return tuple(map(int, findall(r'[-]?\d+', string)))
+		
+	def set_params_from_string(self, string):
+		self.parameters = self.find_params_from_string(string)
 		
 	def update_condition(self, function, *parameters):
 		self.function = function
@@ -67,6 +75,10 @@ class ArithSequCnt(Condition):
 	def is_string_condition(string):
 		return "len([i for i in range(len(hand.cards) - 1) if (sorted(hand.cards, key=lambda card: card.val)[i+1].val - " in string \
 			and "sorted(hand.cards, key=lambda card: card.val)[i].val) == " in string and "]) == " in string
+			
+	def set_params_from_string(self, string):
+		numbers = self.find_params_from_string(string)
+		self.parameters = numbers[2:]
 		
 	@staticmethod
 	def arith_sequ_cnt(hand, adder, count):

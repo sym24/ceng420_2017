@@ -4,7 +4,6 @@ from gene import Gene
 from condition import *
 from hand import Hand
 from pandas import read_csv
-from re import findall
 import os
 
 def get_classified_hands(data_path):
@@ -61,8 +60,7 @@ def find_condition(condition_string):
 			
 	# Find the parameters for the condition if the string is a condition
 	if condition is not None:
-		parameters = map(int, findall(r'[-]?\d+', condition_string))
-		condition.parameters = tuple(parameters)
+		condition.set_params_from_string(condition_string)
 	else:
 		print "Unable to find correct condition"
 		print condition_string
