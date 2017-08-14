@@ -18,6 +18,7 @@ class Hand(object):
 		except KeyError:
 			self.id = -1
 		self.assigned_class = -1
+		self.genes = []
 		
 	def __str__(self):
 		str = ""
